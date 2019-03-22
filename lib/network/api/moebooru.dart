@@ -1,15 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:flexbooru_flutter/model/post_dan.dart';
+import 'package:flexbooru_flutter/model/post_moe.dart';
 import 'package:flexbooru_flutter/network/http_core.dart';
 
-class DanApi {
+class MoeApi {
 
-  DanApi._internal();
+  MoeApi._internal();
   
-  static DanApi instance = DanApi._internal();
-  factory DanApi() => instance;
+  static MoeApi instance = MoeApi._internal();
+  factory MoeApi() => instance;
 
-  Future<List<PostDan>> getPosts(String url, Map<String, String> params) async {
+  Future<List<PostMoe>> getPosts(String url, Map<String, String> params) async {
     Response response;
     try {
       response = await HttpCore.instance.get(url, params: params);
@@ -19,7 +19,7 @@ class DanApi {
     if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
       var data = response.data;
       if (data != null) {
-        return getPostDanList(data);
+        return getPostMoeList(data);
       } else return [];
     } else return [];
   }

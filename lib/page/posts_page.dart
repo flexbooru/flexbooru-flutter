@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flexbooru_flutter/transparent_image.dart';
 import 'package:flexbooru_flutter/model/post_base.dart';
-import 'package:flexbooru_flutter/model/post_dan.dart';
-import 'package:flexbooru_flutter/model/post_moe.dart';
 import 'package:flexbooru_flutter/network/api/danbooru.dart';
-import 'package:flexbooru_flutter/network/http_core.dart';
+import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 
@@ -32,8 +29,8 @@ class PostsPageState extends State<PostsPage> {
       body: StaggeredGridView.countBuilder(
         primary: false,
         crossAxisCount: 3,
-        mainAxisSpacing: 2.0,
-        crossAxisSpacing: 2.0,
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 0.0,
         itemCount: _getItemCount(),
         itemBuilder: (context, index) => _Tile(_posts[index]),
         staggeredTileBuilder: (index) => StaggeredTile.fit(1),
@@ -48,21 +45,15 @@ class PostsPageState extends State<PostsPage> {
     return _posts.length;
   }
 
-  Future<Null> _fetchPostsList() async {
-    var url = "https://yande.re/post.json";
-    var params = {
+  void _fetchPostsList() async {
+    String url = "https://yande.re/post.json";
+    var params = <String, String>{
       'limit': '20',
       'page': '1'
     };
-    HttpCore.instance.get(url, (data){
-      setState(() {
-        _posts = getPostMoeList(data);
-      });
-      if (_posts != null && _posts.length > 0) {
-        print('Date: ' + _posts[0].getCreatedDate());
-      }
-    }, params: params, errorCallback: (errorMsg){
-      print('errorMsg: ' + errorMsg);
+    var posts = await MoeApi.instance.getPosts(url, params);
+    setState(() {
+      _posts = posts;
     });
   }
 }
@@ -81,10 +72,14 @@ class _Tile extends StatelessWidget {
           Stack(
             children: <Widget>[
               //Center(child: CircularProgressIndicator()),
-              Center(
+              Container(
                 child: AspectRatio(
                   aspectRatio: post.getPostWidth()/post.getPostHeight(),
-                  child: CachedNetworkImage(imageUrl: post.getPreviewUrl()),
+                  child: CachedNetworkImage(
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    imageUrl: post.getPreviewUrl()),
                 ),
               ),
             ],
@@ -92,16 +87,20 @@ class _Tile extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: Column(
-              children: <Widget>[
-                Text(
-                  '#${post.getPostId()}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '${post.getPostWidth()} x ${post.getPostHeight()}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('#${post.getPostId()}'),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                            '${post.getPostWidth()} x ${post.getPostHeight()}',
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                  ),
+                  
+                ],
             ),
           )
         ],

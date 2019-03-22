@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 
 class HttpCore {
@@ -7,7 +5,7 @@ class HttpCore {
   Dio _dio;
 
   HttpCore._internal() {
-    _dio = new Dio();
+    _dio = Dio();
     _dio.options.connectTimeout = 5000;
     _dio.options.receiveTimeout = 10000;
     _dio.options.headers = {
@@ -22,62 +20,32 @@ class HttpCore {
   static const String GET = "get";
   static const String POST = "post";
 
-  void get(String url, Function callback,
-  {Map<String, String> params, Function errorCallback}) {
-    _request(url, callback, 
-    method: GET, params: params, errorCallback: errorCallback);
-  }
-  void post(String url, Function callback,
-  {Map<String, String> params, Function errorCallback}) {
-    _request(url, callback, 
-    method: POST, params: params, errorCallback: errorCallback);
-  }
+  Future<Response> get(String url, {Map<String, String> params}) =>
+    _request(url, method: GET, params: params);
+  
+  Future<Response> post(String url, {Map<String, String> params}) =>
+    _request(url, method: POST, params: params);
 
-  void _request(String url, Function callback,
-      {String method,
-      Map<String, String> params,
-      Function errorCallback}) async {
-        String errorMsg = "";
-        int statusCode;
-        try {
-          Response response;
-          if (method == GET) {
-            if (params != null && params.isNotEmpty) {
-              StringBuffer sb = new StringBuffer("?");
-              params.forEach((key, value) {
-                sb.write("$key" + "=" + "$value" + "&");
-              });
-              String paramStr = sb.toString();
-              paramStr = paramStr.substring(0, paramStr.length - 1);
-              url += paramStr;
-            }
-            response = await _dio.get(url);
-          } else if (method == POST) {
-            if (params != null && params.isNotEmpty) {
-              response = await _dio.post(url, data: params);
-            } else {
-              response = await _dio.post(url);
-            }
-          }
-          statusCode = response.statusCode;
-          print(statusCode);
-          if (statusCode < 200 || statusCode > 300) {
-            errorMsg = "code: " + statusCode.toString();
-            _handError(errorCallback, errorMsg);
-            return;
-          }
-          if (callback != null) {
-            List data = response.data;
-            callback(data);
-          }
-      } catch (exception) {
-            _handError(errorCallback, exception.toString());
+  Future<Response> _request(String url, {String method, Map<String, String> params}) async {
+    Response response;
+    if (method == GET) {
+      if (params != null && params.isNotEmpty) {
+        StringBuffer sb = StringBuffer("?");
+        params.forEach((key, value) {
+          sb.write("$key" + "=" + "$value" + "&");
+        });
+        String paramStr = sb.toString();
+        paramStr = paramStr.substring(0, paramStr.length - 1);
+        url += paramStr;
       }
-  }
-
-  void _handError(Function errorCallBack, String errorMsg) {
-    if (errorCallBack != null) {
-      errorCallBack(errorMsg);
+      response = await _dio.get(url);
+    } else if (method == POST) {
+      if (params != null && params.isNotEmpty) {
+        response = await _dio.post(url, data: params);
+      } else {
+        response = await _dio.post(url);
+      }
     }
+    return response;
   }
 }

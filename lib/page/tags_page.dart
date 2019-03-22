@@ -3,21 +3,21 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flexbooru_flutter/transparent_image.dart';
 
 class TagsPage extends StatelessWidget {
-  TagsPage() : _sizes = new List.generate(20, (i) => new IntSize(200, 400)).toList();
+  TagsPage() : _sizes = List.generate(20, (i) => IntSize(200, 400)).toList();
 
   final List<IntSize> _sizes;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new StaggeredGridView.countBuilder(
+    return Scaffold(
+      body: StaggeredGridView.countBuilder(
         primary: false,
         crossAxisCount: 4,
         mainAxisSpacing: 4.0,
         crossAxisSpacing: 4.0,
         itemCount: _sizes.length,
-        itemBuilder: (context, index) => new _Tile(index, _sizes[index]),
-        staggeredTileBuilder: (index) => new StaggeredTile.fit(2),
+        itemBuilder: (context, index) => _Tile(index, _sizes[index]),
+        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
       ),
     );
   }
@@ -38,16 +38,16 @@ class _Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
-      child: new Column(
+    return Card(
+      child: Column(
         children: <Widget>[
-          new Stack(
+          Stack(
             children: <Widget>[
-              //new Center(child: new CircularProgressIndicator()),
-              new Center(
-                child: new AspectRatio(
+              //Center(child: CircularProgressIndicator()),
+              Center(
+                child: AspectRatio(
                   aspectRatio: size.width/size.height,
-                  child: new FadeInImage.memoryNetwork(
+                  child: FadeInImage.memoryNetwork(
                     placeholder: kTransparentImage,
                     image: 'https://picsum.photos/${size.width}/${size.height}/',
                   ),
@@ -55,19 +55,19 @@ class _Tile extends StatelessWidget {
               ),
             ],
           ),
-          new Padding(
+          Padding(
             padding: const EdgeInsets.all(4.0),
-            child: new Column(
+            child: Column(
               children: <Widget>[
-                new Text(
+                Text(
                   'Image number $index',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                new Text(
+                Text(
                   'Width: ${size.width}',
                   style: const TextStyle(color: Colors.grey),
                 ),
-                new Text(
+                Text(
                   'Height: ${size.height}',
                   style: const TextStyle(color: Colors.grey),
                 ),
