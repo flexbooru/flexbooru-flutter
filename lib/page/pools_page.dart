@@ -10,9 +10,6 @@ class PoolsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(
-          title: Text("Pools"),
-        ),
       body: new StaggeredGridView.countBuilder(
         primary: false,
         crossAxisCount: 4,
