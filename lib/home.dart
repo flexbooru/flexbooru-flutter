@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:flexbooru_flutter/bottom_navigation.dart';
 import 'package:flexbooru_flutter/page/posts_page.dart';
+import 'package:flexbooru_flutter/page/popular_page.dart';
 import 'package:flexbooru_flutter/page/pools_page.dart';
 import 'package:flexbooru_flutter/page/tags_page.dart';
 
@@ -84,6 +85,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         ),
         body: Stack(children: <Widget>[
           _buildOffstageNavigator(TabItem.posts),
+          _buildOffstageNavigator(TabItem.popular),
           _buildOffstageNavigator(TabItem.pools),
           _buildOffstageNavigator(TabItem.tags),
         ],),
@@ -115,6 +117,9 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     switch (tabItem) {
       case TabItem.posts:
         widget = PostsPage();
+        break;
+      case TabItem.popular:
+        widget = PopularPage();
         break;
       case TabItem.pools:
         widget = PoolsPage();

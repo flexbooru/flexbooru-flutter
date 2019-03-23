@@ -2,67 +2,100 @@
 import 'package:flutter/material.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 
-enum TabItem { posts, pools, tags }
+enum TabItem { posts, popular, pools, tags }
 
 class TabHelper {
-  static TabItem item({int index}) {
+  static TabItem item(int index) {
+    TabItem item;
     switch (index) {
       case 0:
-        return TabItem.posts;
+        item = TabItem.posts;
+        break;
       case 1:
-        return TabItem.pools;
+        item = TabItem.popular;
+        break;
       case 2:
-        return TabItem.tags;
+        item = TabItem.pools;
+        break;
+      case 3:
+        item = TabItem.tags;
+        break;
     }
-    return TabItem.posts;
+    return item;
   }
 
   static int index(TabItem tabItem) {
+    int index = -1;
     switch (tabItem) {
       case TabItem.posts:
-        return 0;
+        index = 0;
+        break;
+      case TabItem.popular:
+        index = 1;
+        break;
       case TabItem.pools:
-        return 1;
+        index = 2;
+        break;
       case TabItem.tags:
-        return 2;
+        index = 3;
+        break;
     }
-    return 0;
+    return index;
   }
 
   static String description(TabItem tabItem) {
+    String title = '';
     switch (tabItem) {
       case TabItem.posts:
-        return 'Posts';
+        title = "Posts";
+        break;
+      case TabItem.popular:
+        title = "Popular";
+        break;
       case TabItem.pools:
-        return 'Pools';
+        title = "Pools";
+        break;
       case TabItem.tags:
-        return 'Tags';
+        title = "Tags";
+        break;
     }
-    return '';
+    return title;
   }
   static IconData icon(TabItem tabItem) {
+    IconData data;
     switch (tabItem) {
       case TabItem.posts:
-        return OMIcons.photo;
+        data = OMIcons.photo;
+        break;
+      case TabItem.popular:
+        data = OMIcons.whatshot;
+        break;
       case TabItem.pools:
-        return OMIcons.photoAlbum;
+        data = OMIcons.photoAlbum;
+        break;
       case TabItem.tags:
-        return OMIcons.bookmarkBorder;
-      default:
-        return OMIcons.photo;
+        data = OMIcons.bookmarkBorder;
+        break;
     }
+    return data;
   }
   static IconData activeIcon(TabItem tabItem) {
+    IconData data;
     switch (tabItem) {
       case TabItem.posts:
-        return Icons.photo;
+        data = Icons.photo;
+        break;
+      case TabItem.popular:
+        data = Icons.whatshot;
+        break;
       case TabItem.pools:
-        return Icons.photo_album;
+        data = Icons.photo_album;
+        break;
       case TabItem.tags:
-        return Icons.bookmark;
-      default:
-        return Icons.photo;
+        data = Icons.bookmark_border;
+        break;
     }
+    return data;
   }
 }
 
@@ -76,12 +109,13 @@ class BottomNavigation extends StatelessWidget {
     return BottomNavigationBar(
       items: [
         _buildItem(tabItem: TabItem.posts),
+        _buildItem(tabItem: TabItem.popular),
         _buildItem(tabItem: TabItem.pools),
         _buildItem(tabItem: TabItem.tags),
       ],
       currentIndex: TabHelper.index(currentTab),
       onTap: (index) => onSelectTab(
-        TabHelper.item(index: index),
+        TabHelper.item(index),
       ),
     );
   }

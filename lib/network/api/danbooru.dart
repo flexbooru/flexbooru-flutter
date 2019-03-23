@@ -8,6 +8,9 @@ class BaseUrlHelper {
   static String posts(String scheme, String host) {
     return "$scheme://$host/posts.json";
   }
+  static String popular(String scheme, String host) {
+    return "$scheme://$host/explore/posts/popular.json";
+  }
   static String pools(String scheme, String host) {
     return "$scheme://$host/pools.json";
   }
@@ -31,6 +34,26 @@ class DanApi {
     Response response;
     try {
       response = await HttpCore.instance.get(BaseUrlHelper.posts(scheme, host), params: params);
+    } catch (e) {
+      print(e.toString());
+    }
+    if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
+      return getPostDanList(
+          list: response.data, 
+          scheme: scheme,
+          host: host,
+          keyword: params['tags']);
+    } else return [];
+  }
+
+  Future<List<PostDan>> getPopularPosts(
+    String scheme,
+    String host, 
+    Map<String, dynamic> params) async {
+      
+    Response response;
+    try {
+      response = await HttpCore.instance.get(BaseUrlHelper.popular(scheme, host), params: params);
     } catch (e) {
       print(e.toString());
     }

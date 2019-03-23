@@ -76,7 +76,6 @@ class _Tile extends StatelessWidget {
         children: <Widget>[
           Stack(
             children: <Widget>[
-              //Center(child: CircularProgressIndicator()),
               Container(
                 child: AspectRatio(
                   aspectRatio: post.getPostWidth()/post.getPostHeight(),
