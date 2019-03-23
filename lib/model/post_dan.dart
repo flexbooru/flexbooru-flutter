@@ -1,13 +1,27 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flexbooru_flutter/helper/booru_helper.dart';
 import 'post_base.dart';
 
 part 'post_dan.g.dart';
 
-List<PostDan> getPostDanList(List<dynamic> list) {
+const PATTERN_DAN = "yyyy-MM-dd'T'HH:mm:ss.sss";
+
+List<PostDan> getPostDanList({
+  List<dynamic> list, 
+  String scheme, 
+  String host, 
+  String keyword}) {
+  
   List<PostDan> result = [];
   list.forEach((item) {
-    result.add(PostDan.fromJson(item));
+    PostDan post = PostDan.fromJson(item);
+    post.type = BooruHelper.index(BooruType.danbooru);
+    post.postId = post.id;
+    post.scheme = scheme;
+    post.host = host;
+    post.keyword = keyword;
+    result.add(post);
   });
   return result;
 }
@@ -207,7 +221,7 @@ class PostDan extends PostBase {
     this.tagStringMeta,
     this.fileUrl,
     this.largeFileUrl,
-    this.previewFileUrl,);
+    this.previewFileUrl);
 
   factory PostDan.fromJson(Map<String, dynamic> srcJson) => _$PostDanFromJson(srcJson);
 
@@ -263,8 +277,6 @@ class PostDan extends PostBase {
     }
     return checkUrl(largeFileUrl);
   }
-
-  static const PATTERN_DAN = "yyyy-MM-dd'T'HH:mm:ss.sss";
 
   @override
   String getCreatedDate() {

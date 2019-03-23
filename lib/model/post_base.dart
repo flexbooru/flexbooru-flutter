@@ -1,10 +1,17 @@
-
+import 'package:json_annotation/json_annotation.dart';
 
 abstract class PostBase extends Object {
+  @JsonKey(ignore: true)
   int uid = 0;
+  @JsonKey(ignore: true)
   int type = 0;
+  @JsonKey(ignore: true)
+  int postId = 0;
+  @JsonKey(ignore: true)
   String scheme = 'http';
+  @JsonKey(ignore: true)
   String host = '';
+  @JsonKey(ignore: true)
   String keyword = '';
 
   String checkUrl(String url) {

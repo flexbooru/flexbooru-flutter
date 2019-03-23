@@ -6,7 +6,7 @@ class HttpCore {
 
   HttpCore._internal() {
     _dio = Dio();
-    _dio.options.connectTimeout = 5000;
+    _dio.options.connectTimeout = 10000;
     _dio.options.receiveTimeout = 10000;
     _dio.options.headers = {
       "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36"

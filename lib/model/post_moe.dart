@@ -1,13 +1,25 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart'; 
+import 'package:flexbooru_flutter/helper/booru_helper.dart';
 import 'post_base.dart';
 
 part 'post_moe.g.dart';
 
-List<PostMoe> getPostMoeList(List<dynamic> list) {
+List<PostMoe> getPostMoeList({
+  List<dynamic> list, 
+  String scheme, 
+  String host, 
+  String keyword}) {
+
   List<PostMoe> result = [];
   list.forEach((item) {
-    result.add(PostMoe.fromJson(item));
+    PostMoe post = PostMoe.fromJson(item);
+    post.type = BooruHelper.index(BooruType.moebooru);
+    post.postId = post.id;
+    post.scheme = scheme;
+    post.host = host;
+    post.keyword = keyword;
+    result.add(post);
   });
   return result;
 }

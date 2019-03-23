@@ -49,12 +49,14 @@ class PostsPageState extends State<PostsPage> {
   }
 
   void _fetchPostsList() async {
-    String url = "https://yande.re/post.json";
+    String scheme = 'https';
+    String host = 'yande.re';
     var params = <String, String>{
-      'limit': '20',
+      'tags': 'mash_kyrielight',
+      'limit': '30',
       'page': '1'
     };
-    var posts = await MoeApi.instance.getPosts(url, params);
+    var posts = await DanApi.instance.getPosts(scheme, 'danbooru.donmai.us', params);
     setState(() {
       _posts = posts;
     });
