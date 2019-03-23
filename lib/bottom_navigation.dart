@@ -92,7 +92,7 @@ class TabHelper {
         data = Icons.photo_album;
         break;
       case TabItem.tags:
-        data = Icons.bookmark_border;
+        data = Icons.bookmark;
         break;
     }
     return data;
@@ -113,6 +113,7 @@ class BottomNavigation extends StatelessWidget {
         _buildItem(tabItem: TabItem.pools),
         _buildItem(tabItem: TabItem.tags),
       ],
+      type: BottomNavigationBarType.fixed,
       currentIndex: TabHelper.index(currentTab),
       onTap: (index) => onSelectTab(
         TabHelper.item(index),

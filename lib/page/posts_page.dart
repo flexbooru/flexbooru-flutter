@@ -53,7 +53,7 @@ class PostsPageState extends State<PostsPage> {
     String host = 'yande.re';
     var params = <String, dynamic>{
       'tags': 'mash_kyrielight',
-      'limit': 30,
+      'limit': 40,
       'page': 1
     };
     var posts = await MoeApi.instance.getPosts(scheme, host, params);
