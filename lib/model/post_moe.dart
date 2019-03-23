@@ -145,6 +145,7 @@ class PostMoe extends PostBase {
 
   factory PostMoe.fromJson(Map<String, dynamic> srcJson) => _$PostMoeFromJson(srcJson);
 
+  @override
   Map<String, dynamic> toJson() => _$PostMoeToJson(this);
 
   @override

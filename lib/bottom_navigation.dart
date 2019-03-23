@@ -125,7 +125,7 @@ class BottomNavigation extends StatelessWidget {
 
     String _text = TabHelper.description(tabItem);
     IconData _icon = TabHelper.icon(tabItem);
-    IconData _activeIcon =TabHelper.activeIcon(tabItem);
+    IconData _activeIcon = TabHelper.activeIcon(tabItem);
 
     return BottomNavigationBarItem(
       icon: Icon(_icon),

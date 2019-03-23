@@ -29,6 +29,8 @@ abstract class PostBase extends Object {
     }
   }
 
+  Map<String, dynamic> toJson();
+
   int getPostId();
   int getPostWidth();
   int getPostHeight();

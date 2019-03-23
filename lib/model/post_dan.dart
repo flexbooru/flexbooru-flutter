@@ -224,6 +224,7 @@ class PostDan extends PostBase {
 
   factory PostDan.fromJson(Map<String, dynamic> srcJson) => _$PostDanFromJson(srcJson);
 
+  @override
   Map<String, dynamic> toJson() => _$PostDanToJson(this);
 
   @override

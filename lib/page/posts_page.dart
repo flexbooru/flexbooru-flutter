@@ -4,6 +4,7 @@ import 'package:flexbooru_flutter/model/post_base.dart';
 import 'package:flexbooru_flutter/network/api/danbooru.dart';
 import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flexbooru_flutter/helper/database_helper.dart';
 
 
 class PostsPage extends StatefulWidget {
@@ -59,10 +60,11 @@ class PostsPageState extends State<PostsPage> {
     String host = 'yande.re';
     var params = <String, dynamic>{
       'tags': 'mash_kyrielight',
-      'limit': 40,
+      'limit': 50,
       'page': 1
     };
     var posts = await MoeApi.instance.getPosts(scheme, host, params);
+    await DatabaseHelper.instance.insetPosts(posts);
     setState(() {
       _posts = posts;
     });
