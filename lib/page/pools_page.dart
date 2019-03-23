@@ -1,80 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flexbooru_flutter/transparent_image.dart';
+import 'package:flexbooru_flutter/model/pool_base.dart';
+import 'package:flexbooru_flutter/network/api/danbooru.dart';
+import 'package:flexbooru_flutter/network/api/moebooru.dart';
 
-class PoolsPage extends StatelessWidget {
-  PoolsPage() : _sizes = List.generate(20, (i) => IntSize(200, 300)).toList();
-
-  final List<IntSize> _sizes;
+class PoolsPage extends StatefulWidget {
+  PoolsPage() : super();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StaggeredGridView.countBuilder(
-        primary: false,
-        crossAxisCount: 4,
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-        itemCount: _sizes.length,
-        itemBuilder: (context, index) => _Tile(index, _sizes[index]),
-        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-      ),
-    );
+  State<StatefulWidget> createState() => _PoolsPageList();
+}
+
+class _PoolsPageList extends State<PoolsPage> {
+
+  List<PoolBase> _pools = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fechPoolsList();
   }
-}
 
-class IntSize {
-  const IntSize(this.width, this.height);
-
-  final int width;
-  final int height;
-}
-
-class _Tile extends StatelessWidget {
-  const _Tile(this.index, this.size);
-
-  final IntSize size;
-  final int index;
+  void _fechPoolsList() async {
+    String scheme = 'https';
+    String host = 'danbooru.donmai.us';
+    var params = <String, String>{
+      'limit': '30',
+      'page': '1'
+    };
+    var pools = await DanApi.instance.getPools(scheme, host, params);
+    setState(() {
+      _pools = pools;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              //Center(child: CircularProgressIndicator()),
-              Center(
-                child: AspectRatio(
-                  aspectRatio: size.width/size.height,
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: 'https://picsum.photos/${size.width}/${size.height}/',
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'Image number $index',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Width: ${size.width}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  'Height: ${size.height}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
+    return Scrollbar(
+      child: ListView(
+        padding: EdgeInsets.symmetric(vertical: 4.0),
+        children: _pools.map<Widget>((PoolBase pool) {
+          return MergeSemantics(
+            child: ListTile(
+              isThreeLine: false,
+              dense: false,
+              leading: ExcludeSemantics(child: CircleAvatar(child: Text(pool.getCreatorName()[0]))),
+              title: Text(pool.getPoolName()),
             ),
-          )
-        ],
+          );
+        }).toList(),
       ),
     );
   }

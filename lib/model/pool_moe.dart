@@ -1,8 +1,19 @@
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'pool_base.dart';
   
 part 'pool_moe.g.dart';
 
+const PATTERN_MOE_T = "yyyy-MM-dd'T'HH:mm:ss.sss'Z'";
+const PATTERN_MOE = "yyyy-MM-dd HH:mm:ss";
+
+List<PoolMoe> getPoolMoeList(List<dynamic> list) {
+  List<PoolMoe> result = [];
+  list?.forEach((item) {
+    result.add(PoolMoe.fromJson(item));
+  });
+  return result;
+}
 
 @JsonSerializable(nullable: true)
 class PoolMoe extends PoolBase {
@@ -38,45 +49,32 @@ class PoolMoe extends PoolBase {
   Map<String, dynamic> toJson() => _$PoolMoeToJson(this);
 
   @override
-  int getCreatorId() {
-    // TODO: implement getCreatorId
-    return null;
-  }
+  int getCreatorId() => userId;
 
   @override
-  String getCreatorName() {
-    // TODO: implement getCreatorName
-    return null;
-  }
+  String getCreatorName() => '';
 
   @override
   String getPoolDate() {
-    // TODO: implement getPoolDate
-    return null;
+    String date = updatedAt;
+    if (updatedAt.contains('T')) {
+      date = DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_MOE_T).parse(updatedAt));
+    } else if (updatedAt.contains(' ')) {
+      date = DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_MOE).parse(updatedAt));
+    }
+    return date;
   }
 
   @override
-  String getPoolDescription() {
-    // TODO: implement getPoolDescription
-    return null;
-  }
+  String getPoolDescription() => description;
 
   @override
-  int getPoolId() {
-    // TODO: implement getPoolId
-    return null;
-  }
+  int getPoolId() => id;
 
   @override
-  String getPoolName() {
-    // TODO: implement getPoolName
-    return null;
-  }
+  String getPoolName() => name;
 
   @override
-  int getPostCount() {
-    // TODO: implement getPostCount
-    return null;
-  }
+  int getPostCount() => postCount;
 
 }

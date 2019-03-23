@@ -12,7 +12,7 @@ List<PostMoe> getPostMoeList({
   String keyword}) {
 
   List<PostMoe> result = [];
-  list.forEach((item) {
+  list?.forEach((item) {
     PostMoe post = PostMoe.fromJson(item);
     post.type = BooruHelper.index(BooruType.moebooru);
     post.postId = post.id;

@@ -56,7 +56,7 @@ class PostsPageState extends State<PostsPage> {
       'limit': '30',
       'page': '1'
     };
-    var posts = await DanApi.instance.getPosts(scheme, 'danbooru.donmai.us', params);
+    var posts = await MoeApi.instance.getPosts(scheme, host, params);
     setState(() {
       _posts = posts;
     });

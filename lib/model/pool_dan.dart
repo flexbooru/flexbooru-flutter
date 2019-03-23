@@ -1,9 +1,18 @@
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart'; 
 import 'pool_base.dart';
   
 part 'pool_dan.g.dart';
 
 const PATTERN_DAN = "yyyy-MM-dd'T'HH:mm:ss.sss";
+
+List<PoolDan> getPoolDanList(List<dynamic> list) {
+  List<PoolDan> result = [];
+  list?.forEach((item) {
+    result.add(PoolDan.fromJson(item));
+  });
+  return result;
+}
 
 @JsonSerializable(nullable: true)
 class PoolDan extends PoolBase {
@@ -57,10 +66,7 @@ class PoolDan extends PoolBase {
   String getCreatorName() => creatorName;
 
   @override
-  String getPoolDate() {
-    // TODO: implement getPoolDate
-    return null;
-  }
+  String getPoolDate() => DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DAN).parse(updatedAt));
 
   @override
   String getPoolDescription() => description;

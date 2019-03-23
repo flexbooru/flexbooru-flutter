@@ -14,7 +14,7 @@ List<PostDan> getPostDanList({
   String keyword}) {
   
   List<PostDan> result = [];
-  list.forEach((item) {
+  list?.forEach((item) {
     PostDan post = PostDan.fromJson(item);
     post.type = BooruHelper.index(BooruType.danbooru);
     post.postId = post.id;
