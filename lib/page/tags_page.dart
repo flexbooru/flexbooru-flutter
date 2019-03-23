@@ -1,80 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flexbooru_flutter/transparent_image.dart';
+import 'package:flexbooru_flutter/model/tag_base.dart';
+import 'package:flexbooru_flutter/network/api/danbooru.dart';
+import 'package:flexbooru_flutter/network/api/moebooru.dart';
 
-class TagsPage extends StatelessWidget {
-  TagsPage() : _sizes = List.generate(20, (i) => IntSize(200, 400)).toList();
+class TagsPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => TagsPageState();
+}
 
-  final List<IntSize> _sizes;
+class TagsPageState extends State<TagsPage> {
+
+  List<TagBase> _tags = [];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StaggeredGridView.countBuilder(
-        primary: false,
-        crossAxisCount: 4,
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-        itemCount: _sizes.length,
-        itemBuilder: (context, index) => _Tile(index, _sizes[index]),
-        staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-      ),
-    );
+  void initState() {
+    super.initState();
+    _fechTagsList();
   }
-}
 
-class IntSize {
-  const IntSize(this.width, this.height);
-
-  final int width;
-  final int height;
-}
-
-class _Tile extends StatelessWidget {
-  const _Tile(this.index, this.size);
-
-  final IntSize size;
-  final int index;
+  void _fechTagsList() async {
+    String scheme = 'https';
+    String host = 'danbooru.donmai.us';
+    var params = <String, dynamic>{
+      'limit': 30,
+      'page': 1
+    };
+    var tags = await DanApi.instance.getTags(scheme, host, params);
+    setState(() {
+      _tags = tags;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              //Center(child: CircularProgressIndicator()),
-              Center(
-                child: AspectRatio(
-                  aspectRatio: size.width/size.height,
-                  child: FadeInImage.memoryNetwork(
-                    placeholder: kTransparentImage,
-                    image: 'https://picsum.photos/${size.width}/${size.height}/',
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'Image number $index',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Width: ${size.width}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  'Height: ${size.height}',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
+    return Scrollbar(
+      child: ListView(
+        padding: EdgeInsets.symmetric(vertical: 4.0),
+        children: _tags.map<Widget>((TagBase tag) {
+          return MergeSemantics(
+            child: ListTile(
+              isThreeLine: false,
+              dense: false,
+              title: Text(tag.getTagName()),
             ),
-          )
-        ],
+          );
+        }).toList(),
       ),
     );
   }

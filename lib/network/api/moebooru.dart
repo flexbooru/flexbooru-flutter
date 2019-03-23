@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flexbooru_flutter/model/post_moe.dart';
 import 'package:flexbooru_flutter/model/pool_moe.dart';
+import 'package:flexbooru_flutter/model/tag_moe.dart';
 import 'package:flexbooru_flutter/network/http_core.dart';
 
 class BaseUrlHelper {
@@ -9,6 +10,9 @@ class BaseUrlHelper {
   }
   static String pools(String scheme, String host) {
     return "$scheme://$host/pool.json";
+  }
+  static String tags(String scheme, String host) {
+    return "$scheme://$host/tag.json";
   }
 }
 
@@ -22,7 +26,7 @@ class MoeApi {
   Future<List<PostMoe>> getPosts(
     String scheme,
     String host, 
-    Map<String, String> params) async {
+    Map<String, dynamic> params) async {
 
     Response response;
     try {
@@ -42,7 +46,7 @@ class MoeApi {
   Future<List<PoolMoe>> getPools(
     String scheme,
     String host, 
-    Map<String, String> params) async {
+    Map<String, dynamic> params) async {
 
       Response response;
       try {
@@ -52,6 +56,22 @@ class MoeApi {
       }
       if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
         return getPoolMoeList(response.data);
+      } else return [];
+  }
+
+  Future<List<TagMoe>> getTags(
+    String scheme,
+    String host, 
+    Map<String, dynamic> params) async {
+
+      Response response;
+      try {
+        response = await HttpCore.instance.get(BaseUrlHelper.tags(scheme, host), params: params);
+      } catch (e) {
+        print(e.toString());
+      }
+      if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
+        return getTagMoeList(response.data);
       } else return [];
   }
 }

@@ -4,13 +4,11 @@ import 'package:flexbooru_flutter/network/api/danbooru.dart';
 import 'package:flexbooru_flutter/network/api/moebooru.dart';
 
 class PoolsPage extends StatefulWidget {
-  PoolsPage() : super();
-
   @override
-  State<StatefulWidget> createState() => _PoolsPageList();
+  State<StatefulWidget> createState() => PoolsPageState();
 }
 
-class _PoolsPageList extends State<PoolsPage> {
+class PoolsPageState extends State<PoolsPage> {
 
   List<PoolBase> _pools = [];
 
@@ -23,9 +21,9 @@ class _PoolsPageList extends State<PoolsPage> {
   void _fechPoolsList() async {
     String scheme = 'https';
     String host = 'danbooru.donmai.us';
-    var params = <String, String>{
-      'limit': '30',
-      'page': '1'
+    var params = <String, dynamic>{
+      'limit': 30,
+      'page': 1
     };
     var pools = await DanApi.instance.getPools(scheme, host, params);
     setState(() {

@@ -51,10 +51,10 @@ class PostsPageState extends State<PostsPage> {
   void _fetchPostsList() async {
     String scheme = 'https';
     String host = 'yande.re';
-    var params = <String, String>{
+    var params = <String, dynamic>{
       'tags': 'mash_kyrielight',
-      'limit': '30',
-      'page': '1'
+      'limit': 30,
+      'page': 1
     };
     var posts = await MoeApi.instance.getPosts(scheme, host, params);
     setState(() {

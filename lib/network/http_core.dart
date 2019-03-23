@@ -20,13 +20,13 @@ class HttpCore {
   static const String GET = "get";
   static const String POST = "post";
 
-  Future<Response> get(String url, {Map<String, String> params}) =>
+  Future<Response> get(String url, {Map<String, dynamic> params}) =>
     _request(url, method: GET, params: params);
   
-  Future<Response> post(String url, {Map<String, String> params}) =>
+  Future<Response> post(String url, {Map<String, dynamic> params}) =>
     _request(url, method: POST, params: params);
 
-  Future<Response> _request(String url, {String method, Map<String, String> params}) async {
+  Future<Response> _request(String url, {String method, Map<String, dynamic> params}) async {
     Response response;
     if (method == GET) {
       if (params != null && params.isNotEmpty) {

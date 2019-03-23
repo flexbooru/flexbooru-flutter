@@ -3,6 +3,13 @@ import 'tag_base.dart';
   
 part 'tag_dan.g.dart';
 
+List<TagDan> getTagDanList(List<dynamic> list) {
+  List<TagDan> result = [];
+  list?.forEach((item) {
+    result.add(TagDan.fromJson(item));
+  });
+  return result;
+}
 
 @JsonSerializable(nullable: true)
 class TagDan extends TagBase {

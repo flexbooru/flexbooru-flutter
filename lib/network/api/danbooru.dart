@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flexbooru_flutter/model/post_dan.dart';
 import 'package:flexbooru_flutter/model/pool_dan.dart';
+import 'package:flexbooru_flutter/model/tag_dan.dart';
 import 'package:flexbooru_flutter/network/http_core.dart';
 
 class BaseUrlHelper {
@@ -9,6 +10,9 @@ class BaseUrlHelper {
   }
   static String pools(String scheme, String host) {
     return "$scheme://$host/pools.json";
+  }
+  static String tags(String scheme, String host) {
+    return "$scheme://$host/tags.json";
   }
 }
 
@@ -22,7 +26,7 @@ class DanApi {
   Future<List<PostDan>> getPosts(
     String scheme,
     String host, 
-    Map<String, String> params) async {
+    Map<String, dynamic> params) async {
       
     Response response;
     try {
@@ -42,7 +46,7 @@ class DanApi {
   Future<List<PoolDan>> getPools(
     String scheme,
     String host, 
-    Map<String, String> params) async {
+    Map<String, dynamic> params) async {
 
       Response response;
       try {
@@ -55,4 +59,19 @@ class DanApi {
       } else return [];
   }
 
+  Future<List<TagDan>> getTags(
+    String scheme,
+    String host, 
+    Map<String, dynamic> params) async {
+
+      Response response;
+      try {
+        response = await HttpCore.instance.get(BaseUrlHelper.tags(scheme, host), params: params);
+      } catch (e) {
+        print(e.toString());
+      }
+      if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
+        return getTagDanList(response.data);
+      } else return [];
+  }
 }

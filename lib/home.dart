@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:flexbooru_flutter/bottom_navigation.dart';
-import 'package:flexbooru_flutter/tab_navigator.dart';
+import 'package:flexbooru_flutter/page/posts_page.dart';
+import 'package:flexbooru_flutter/page/pools_page.dart';
+import 'package:flexbooru_flutter/page/tags_page.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -72,7 +74,63 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final drawerHeader = UserAccountsDrawerHeader(
+    
+    return WillPopScope(
+      onWillPop: () async =>
+          !await navigatorKeys[currentTab].currentState.maybePop(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(TabHelper.description(currentTab)),
+        ),
+        body: Stack(children: <Widget>[
+          _buildOffstageNavigator(TabItem.posts),
+          _buildOffstageNavigator(TabItem.pools),
+          _buildOffstageNavigator(TabItem.tags),
+        ],),
+        bottomNavigationBar: BottomNavigation(
+          currentTab: currentTab,
+          onSelectTab: _selectTab,
+        ),
+        drawer: Drawer(
+          child: Column(
+            children: <Widget>[
+              _buildDrawerHeader(),
+              MediaQuery.removePadding(
+                context: context,
+                // DrawerHeader consumes top MediaQuery padding.
+                removeTop: true,
+                child: Expanded(
+                  child: _buildDrawerItems(),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOffstageNavigator(TabItem tabItem) {
+    Widget widget;
+    switch (tabItem) {
+      case TabItem.posts:
+        widget = PostsPage();
+        break;
+      case TabItem.pools:
+        widget = PoolsPage();
+        break;
+      case TabItem.tags:
+        widget = TagsPage();
+        break;
+    }
+    return Offstage(
+      offstage: currentTab != tabItem,
+      child: widget,
+    );
+  }
+  
+  Widget _buildDrawerHeader() {
+    return UserAccountsDrawerHeader(
       accountName: Text("Sample"),
       accountEmail: Text("https://moe.fiepi.com"),
       currentAccountPicture: const CircleAvatar(
@@ -126,7 +184,10 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
           _controller.forward();
       },
     );
-    final drawerItems = ListView(
+  }
+
+  Widget _buildDrawerItems() {
+    return ListView(
       dragStartBehavior: DragStartBehavior.down,
       padding: const EdgeInsets.only(top: 8.0),
       children: <Widget>[
@@ -173,49 +234,6 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
           ],
         ),
       ],
-    );
-    return WillPopScope(
-      onWillPop: () async =>
-          !await navigatorKeys[currentTab].currentState.maybePop(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(TabHelper.description(currentTab)),
-        ),
-        body: Stack(children: <Widget>[
-          _buildOffstageNavigator(TabItem.posts),
-          _buildOffstageNavigator(TabItem.pools),
-          _buildOffstageNavigator(TabItem.tags),
-        ]),
-        bottomNavigationBar: BottomNavigation(
-          currentTab: currentTab,
-          onSelectTab: _selectTab,
-        ),
-        drawer: Drawer(
-          child: Column(
-            children: <Widget>[
-              drawerHeader,
-              MediaQuery.removePadding(
-                context: context,
-                // DrawerHeader consumes top MediaQuery padding.
-                removeTop: true,
-                child: Expanded(
-                  child: drawerItems,
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOffstageNavigator(TabItem tabItem) {
-    return Offstage(
-      offstage: currentTab != tabItem,
-      child: TabNavigator(
-        navigatorKey: navigatorKeys[tabItem],
-        tabItem: tabItem,
-      ),
     );
   }
 }

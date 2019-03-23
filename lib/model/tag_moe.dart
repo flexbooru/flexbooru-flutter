@@ -3,6 +3,14 @@ import 'tag_base.dart';
 
 part 'tag_moe.g.dart';
 
+List<TagMoe> getTagMoeList(List<dynamic> list) {
+  List<TagMoe> result = [];
+  list?.forEach((item) {
+    result.add(TagMoe.fromJson(item));
+  });
+  return result;
+}
+
 @JsonSerializable(nullable: true)
 class TagMoe extends TagBase {
 
