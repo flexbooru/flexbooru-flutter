@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:flexbooru_flutter/bottom_navigation.dart';
 import 'package:flexbooru_flutter/tab_navigator.dart';
 
@@ -24,10 +25,10 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   bool _showDrawerContents = true;
 
   final _drawerItems = <DrawerItem>[
-    DrawerItem(Icons.account_circle, "Account"),
-    DrawerItem(Icons.comment, "Comments"),
-    DrawerItem(Icons.settings, "Settings"),
-    DrawerItem(Icons.info, "About"),
+    DrawerItem(OMIcons.accountCircle, "Account"),
+    DrawerItem(OMIcons.comment, "Comments"),
+    DrawerItem(OMIcons.settings, "Settings"),
+    DrawerItem(OMIcons.info, "About"),
   ];
 
   static final Animatable<Offset> _drawerDetailsTween = Tween<Offset>(

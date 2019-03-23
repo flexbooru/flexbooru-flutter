@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 
 enum TabItem { posts, pools, tags }
 
@@ -42,6 +43,18 @@ class TabHelper {
   static IconData icon(TabItem tabItem) {
     switch (tabItem) {
       case TabItem.posts:
+        return OMIcons.photo;
+      case TabItem.pools:
+        return OMIcons.photoAlbum;
+      case TabItem.tags:
+        return OMIcons.bookmarkBorder;
+      default:
+        return OMIcons.photo;
+    }
+  }
+  static IconData activeIcon(TabItem tabItem) {
+    switch (tabItem) {
+      case TabItem.posts:
         return Icons.photo;
       case TabItem.pools:
         return Icons.photo_album;
@@ -75,15 +88,14 @@ class BottomNavigation extends StatelessWidget {
 
   BottomNavigationBarItem _buildItem({TabItem tabItem}) {
 
-    String text = TabHelper.description(tabItem);
-    IconData icon = TabHelper.icon(tabItem);
+    String _text = TabHelper.description(tabItem);
+    IconData _icon = TabHelper.icon(tabItem);
+    IconData _activeIcon =TabHelper.activeIcon(tabItem);
+
     return BottomNavigationBarItem(
-      icon: Icon(
-        icon,
-        ),
-      title: Text(
-        text,
-      ),
+      icon: Icon(_icon),
+      activeIcon: Icon(_activeIcon),
+      title: Text(_text),
     );
   }
 }
