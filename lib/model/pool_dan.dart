@@ -1,10 +1,9 @@
 import 'package:intl/intl.dart';
-import 'package:json_annotation/json_annotation.dart'; 
+import 'package:json_annotation/json_annotation.dart';
+import 'package:flexbooru_flutter/constants.dart';
 import 'pool_base.dart';
   
 part 'pool_dan.g.dart';
-
-const PATTERN_DAN = "yyyy-MM-dd'T'HH:mm:ss.sss";
 
 List<PoolDan> getPoolDanList(List<dynamic> list) {
   List<PoolDan> result = [];
@@ -66,7 +65,7 @@ class PoolDan extends PoolBase {
   String getCreatorName() => creatorName;
 
   @override
-  String getPoolDate() => DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DAN).parse(updatedAt));
+  String getPoolDate() => DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DATE_DAN).parse(updatedAt));
 
   @override
   String getPoolDescription() => description;

@@ -1,11 +1,9 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flexbooru_flutter/constants.dart';
 import 'pool_base.dart';
   
 part 'pool_moe.g.dart';
-
-const PATTERN_MOE_T = "yyyy-MM-dd'T'HH:mm:ss.sss'Z'";
-const PATTERN_MOE = "yyyy-MM-dd HH:mm:ss";
 
 List<PoolMoe> getPoolMoeList(List<dynamic> list) {
   List<PoolMoe> result = [];
@@ -58,9 +56,9 @@ class PoolMoe extends PoolBase {
   String getPoolDate() {
     String date = updatedAt;
     if (updatedAt.contains('T')) {
-      date = DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_MOE_T).parse(updatedAt));
+      date = DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DATE_MOE_T).parse(updatedAt));
     } else if (updatedAt.contains(' ')) {
-      date = DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_MOE).parse(updatedAt));
+      date = DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DATE_MOE).parse(updatedAt));
     }
     return date;
   }

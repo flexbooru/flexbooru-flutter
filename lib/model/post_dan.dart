@@ -1,11 +1,10 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:flexbooru_flutter/helper/booru_helper.dart';
+import 'package:flexbooru_flutter/constants.dart';
 import 'post_base.dart';
 
 part 'post_dan.g.dart';
-
-const PATTERN_DAN = "yyyy-MM-dd'T'HH:mm:ss.sss";
 
 List<PostDan> getPostDanList({
   List<dynamic> list, 
@@ -280,7 +279,7 @@ class PostDan extends PostBase {
 
   @override
   String getCreatedDate() {
-    return DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DAN).parse(createdAt));
+    return DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DATE_DAN).parse(createdAt));
   }
 
   @override
@@ -289,6 +288,6 @@ class PostDan extends PostBase {
     if (date == null) {
       date = createdAt;
     }
-    return DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DAN).parse(date));
+    return DateFormat.yMMMMd("en_US").add_jm().format(DateFormat(PATTERN_DATE_DAN).parse(date));
   }
 }
