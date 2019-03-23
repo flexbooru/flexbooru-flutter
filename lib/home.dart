@@ -43,6 +43,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
 
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
     TabItem.posts: GlobalKey<NavigatorState>(),
+    TabItem.popular: GlobalKey<NavigatorState>(),
     TabItem.pools: GlobalKey<NavigatorState>(),
     TabItem.tags: GlobalKey<NavigatorState>(),
   };
