@@ -28,14 +28,20 @@ class PostsPageState extends State<PostsPage> {
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(4.0),
-        child: StaggeredGridView.countBuilder(
-          primary: false,
-          crossAxisCount: 3,
-          mainAxisSpacing: 0.0,
-          crossAxisSpacing: 0.0,
-          itemCount: _getItemCount(),
-          itemBuilder: (context, index) => _Tile(_posts[index]),
-          staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+        child: ListView(
+          children: <Widget>[
+            StaggeredGridView.countBuilder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              primary: false,
+              crossAxisCount: 3,
+              mainAxisSpacing: 0.0,
+              crossAxisSpacing: 0.0,
+              itemCount: _getItemCount(),
+              itemBuilder: (context, index) => _Tile(_posts[index]),
+              staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+              ),
+          ],
         ),
       ),
     );
