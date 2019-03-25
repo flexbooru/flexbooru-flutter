@@ -20,12 +20,14 @@ class PopularPageState extends State<PopularPage> {
   PopularPageState(this._booru);
   final Booru _booru;
   List<PostBase> _posts;
-
+  String scale = SCALE_DAY;
+  String period = PERIOD_DAY;
+  
   @override
   void initState() {
     super.initState();
     if (_booru != null) {
-      _fetchPostsList();
+      _initPosts();
     }
   }
 
@@ -62,17 +64,41 @@ class PopularPageState extends State<PopularPage> {
     return _posts.length;
   }
 
+  void _initPosts() async {
+    String keyword;
+    switch (_booru.type) {
+      case BooruType.danbooru:
+        keyword = scale;
+        break;
+      case BooruType.moebooru:
+        keyword = period;
+        break;
+      default:
+    }
+    var posts = await DatabaseHelper.instance.getPosts(
+      type: _booru.type,
+      host: _booru.host,
+      keyword: keyword);
+      if (posts == null || posts.isEmpty) {
+        _fetchPostsList();
+      } else {
+        setState(() {
+          _posts = posts;
+        });
+      }
+  }
+
   void _fetchPostsList() async {
     List<PostBase> posts = [];
     Map<String, dynamic> params = {};
     if (_booru.type == BooruType.danbooru) {
       params.addAll({
-        SCALE_KEY: SCALE_DAY
+        SCALE_KEY: scale
       });
       posts = await DanApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
     } else if (_booru.type == BooruType.moebooru) {
       params.addAll({
-        PERIOD_KEY: PERIOD_DAY
+        PERIOD_KEY: period
       });
       posts = await MoeApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
     }

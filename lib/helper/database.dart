@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:flexbooru_flutter/model/post_base.dart';
@@ -61,9 +63,54 @@ class DatabaseHelper {
         'scheme': post.scheme,
         'host': post.host,
         'keyword': post.keyword,
-        'post': post.toJson().toString()},
+        'post': jsonEncode(post.toJson())},
       conflictAlgorithm: ConflictAlgorithm.replace);
     return result;
+  }
+
+  Future<List<PostBase>> getPosts({
+    @required BooruType type, 
+    @required String host, 
+    @required String keyword}) async {
+    
+    List<PostBase> posts = [];
+    Database db = await database;
+    int indexType = BooruHelper.index(type);
+    var data = await db.query(
+      'posts', 
+      where: '`type` = ? AND `host` = ? AND `keyword` = ? ORDER BY `uid` ASC', 
+      whereArgs: [indexType, host, keyword]);
+    if (data == null || data.isEmpty) return posts;
+    switch (type) {
+      case BooruType.danbooru:
+        data.forEach((item) {
+          Map<String, dynamic> json = jsonDecode(item['post'] as String);
+          var post = PostDan.fromJson(json);
+          post.uid = item['uid'] as int;
+          post.type = indexType;
+          post.postId = item['post_id'] as int;
+          post.scheme = item['scheme'] as String;
+          post.host = item['host'] as String;
+          post.keyword = item['keyword'] as String;
+          posts.add(post);
+        });
+        break;
+      case BooruType.moebooru:
+        data.forEach((item) {
+          Map<String, dynamic> json = jsonDecode(item['post'] as String);
+          var post = PostMoe.fromJson(json);
+          post.uid = item['uid'] as int;
+          post.type = indexType;
+          post.postId = item['post_id'] as int;
+          post.scheme = item['scheme'] as String;
+          post.host = item['host'] as String;
+          post.keyword = item['keyword'] as String;
+          posts.add(post);
+        });
+        break;
+      default:
+    }
+    return posts;
   }
 
   Future<List<Booru>> getAllBoorus() async {

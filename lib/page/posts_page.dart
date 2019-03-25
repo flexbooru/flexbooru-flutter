@@ -9,22 +9,25 @@ import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
 
 class PostsPage extends StatefulWidget {
-  PostsPage(this._booru);
+  PostsPage(this._booru, this._keyword);
   final Booru _booru;
+  final String _keyword;
   @override
-  PostsPageState createState() => PostsPageState(_booru); 
+  PostsPageState createState() => PostsPageState(_booru, _keyword); 
 }
 
 class PostsPageState extends State<PostsPage> {
-  PostsPageState(this._booru);
+  PostsPageState(this._booru, this._keyword);
   final Booru _booru;
+  final String _keyword;
+
   List<PostBase> _posts = [];
 
   @override
   void initState() {
     super.initState();
     if (_booru != null) {
-      _fetchPostsList(); 
+      _initPosts(); 
     }
   }
 
@@ -61,11 +64,25 @@ class PostsPageState extends State<PostsPage> {
     return _posts.length;
   }
 
+  void _initPosts() async {
+    var posts = await DatabaseHelper.instance.getPosts(
+      type: _booru.type,
+      host: _booru.host,
+      keyword: _keyword);
+      if (posts == null || posts.isEmpty) {
+        _fetchPostsList();
+      } else {
+        setState(() {
+          _posts = posts;
+        });
+      }
+  }
+
   void _fetchPostsList() async {
     String scheme = _booru.scheme;
     String host = _booru.host;
     var params = <String, dynamic>{
-      'tags': '',
+      'tags': _keyword,
       'limit': 50,
       'page': 1
     };
@@ -79,7 +96,7 @@ class PostsPageState extends State<PostsPage> {
       _posts = posts;
     });
     if (posts != null && posts.isNotEmpty) {
-      await DatabaseHelper.instance.insertPosts(posts); 
+      DatabaseHelper.instance.insertPosts(posts); 
     }
   }
 }
@@ -124,7 +141,6 @@ class _Tile extends StatelessWidget {
                             style: const TextStyle(color: Colors.grey),
                           ),
                   ),
-                  
                 ],
             ),
           )

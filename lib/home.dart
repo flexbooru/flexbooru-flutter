@@ -23,6 +23,7 @@ class DrawerItem {
 
 class HomeState extends State<Home> with TickerProviderStateMixin {
   
+  String _keyword = '';
   List<User> _users = [];
   Future<List<Booru>> _boorus;
 
@@ -166,7 +167,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     Widget widget;
     switch (tabItem) {
       case TabItem.posts:
-        widget = PostsPage(booru);
+        widget = PostsPage(booru, _keyword);
         break;
       case TabItem.popular:
         widget = PopularPage(booru);
