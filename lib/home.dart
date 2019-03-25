@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:outline_material_icons/outline_material_icons.dart';
@@ -6,9 +7,11 @@ import 'package:flexbooru_flutter/page/posts_page.dart';
 import 'package:flexbooru_flutter/page/popular_page.dart';
 import 'package:flexbooru_flutter/page/pools_page.dart';
 import 'package:flexbooru_flutter/page/tags_page.dart';
+import 'package:flexbooru_flutter/page/boorus_page.dart';
 import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
+import 'package:flexbooru_flutter/constants.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -22,10 +25,12 @@ class DrawerItem {
 }
 
 class HomeState extends State<Home> with TickerProviderStateMixin {
-  
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   String _keyword = '';
   List<User> _users = [];
-  Future<List<Booru>> _boorus;
+  List<Booru> _boorus;
+  Future<List<Booru>> _boorusFuture;
 
   TabItem _currentTab = TabItem.posts;
 
@@ -82,17 +87,41 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void _showInSnackBar(String msg, Duration duration) {
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(content: Text(msg), duration: duration,)
+    );
+  }
+
+  bool exit = false;
+  
+  Future<bool> _doubleClickBack(BuildContext context) {
+    if (_scaffoldKey.currentState.isDrawerOpen) return Future.value(false);
+    if (!exit) {
+      exit = true;
+      var duration = Duration(seconds: 2);
+      Timer.periodic(duration, (timer) {
+        exit = false;
+        timer.cancel();
+      });
+      _showInSnackBar("Press twice to exit.", duration);
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async =>
-          !await navigatorKeys[_currentTab].currentState.maybePop(),
+      onWillPop: () => _doubleClickBack(context),
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text(TabHelper.description(_currentTab)),
         ),
         body: FutureBuilder<List<Booru>>(
-          future: _boorus,
+          future: _boorusFuture,
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
@@ -114,7 +143,23 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         drawer: Drawer(
           child: Column(
             children: <Widget>[
-              _buildDrawerHeader(),
+              FutureBuilder<List<Booru>>(
+                future: _boorusFuture,
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                    case ConnectionState.waiting:
+                      return _buildEmptyDrawerHeader();
+                    default :
+                      var data = snapshot.data;
+                      if ( data == null || data.isEmpty) {
+                        return _buildEmptyDrawerHeader();
+                      } else {
+                        return _buildDrawerHeader(data);
+                      }
+                  }
+                },
+              ),
               MediaQuery.removePadding(
                 context: context,
                 // DrawerHeader consumes top MediaQuery padding.
@@ -144,10 +189,13 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
       );
       boorus = await DatabaseHelper.instance.getAllBoorus();
     }
+    setState(() {
+      _boorus = boorus;
+    });
     Future<List<Booru>> data = Future.value(boorus);
-    if (_boorus != data) {
+    if (_boorusFuture != data) {
       setState(() {
-        _boorus = data; 
+        _boorusFuture = data; 
       });
     }
   }
@@ -185,52 +233,58 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
   
-  Widget _buildDrawerHeader() {
+  Widget _buildDrawerHeader(List<Booru> boorus) {
+    Widget header;
+    if (boorus != null && boorus.isNotEmpty) {
+      header = UserAccountsDrawerHeader(
+        accountName: Text(boorus[0].name),
+        accountEmail: Text("${boorus[0].scheme}://${boorus[0].host}"),
+        currentAccountPicture: CircleAvatar(
+          child: Text(
+            boorus[0].name[0],
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 42.0),
+            ),
+          backgroundColor: Colors.white,
+        ),
+        otherAccountsPictures: boorus.map<Widget>((booru) {
+          GestureDetector(
+            dragStartBehavior: DragStartBehavior.down,
+            onTap: () {
+
+            },
+            child: Semantics(
+              label: booru.name,
+              child: CircleAvatar(
+                child: Text(
+                booru.name[0],
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 24.0),
+                ),
+              backgroundColor: Colors.white,
+              ),
+            ),
+          );
+        }).toList(),
+        margin: EdgeInsets.zero,
+        onDetailsPressed: () {
+          _showDrawerContents = !_showDrawerContents;
+          if (_showDrawerContents)
+            _controller.reverse();
+          else
+            _controller.forward();
+        },
+      );
+    } else {
+      header =_buildEmptyDrawerHeader();
+    }
+    return header;
+  }
+
+  Widget _buildEmptyDrawerHeader() {
     return UserAccountsDrawerHeader(
-      accountName: Text("Sample"),
-      accountEmail: Text("https://moe.fiepi.com"),
-      currentAccountPicture: const CircleAvatar(
-        child: Text(
-          "S",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 42.0
-          ),
-        ),
-        backgroundColor: Colors.white,
-      ),
-      otherAccountsPictures: <Widget>[
-        GestureDetector(
-          dragStartBehavior: DragStartBehavior.down,
-          onTap: () {},
-          child: Semantics(
-            label: 'Switch to Account B',
-            child: const CircleAvatar(
-              child: Text(
-                "B",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24.0),
-              ),
-            backgroundColor: Colors.blue,
-            ),
-          ),
-        ),
-        GestureDetector(
-          dragStartBehavior: DragStartBehavior.down,
-          onTap: () {},
-          child: Semantics(
-            label: 'Switch to Account C',
-            child: const CircleAvatar(
-              child: Text(
-                "C",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24.0),
-              ),
-            backgroundColor: Colors.yellow,
-            ),
-          ),
-        ),
-      ],
+      accountName: Text('none booru'),
+      accountEmail: Text(''),
       margin: EdgeInsets.zero,
       onDetailsPressed: () {
         _showDrawerContents = !_showDrawerContents;
@@ -274,12 +328,11 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         ListTile(
-                          leading: const Icon(Icons.add),
-                          title: const Text('Add booru'),
-                        ),
-                        ListTile(
                           leading: const Icon(Icons.settings),
                           title: const Text('Manage boorus'),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(ROUTE_BOORUS);
+                          },
                         ),
                       ],
                     ),
