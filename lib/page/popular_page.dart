@@ -4,47 +4,55 @@ import 'package:flexbooru_flutter/model/post_base.dart';
 import 'package:flexbooru_flutter/network/api/danbooru.dart';
 import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'package:flexbooru_flutter/helper/database.dart';
+import 'package:flexbooru_flutter/helper/user.dart';
+import 'package:flexbooru_flutter/helper/booru.dart';
+import 'package:flexbooru_flutter/constants.dart';
 
 class PopularPage extends StatefulWidget {
+  PopularPage(this._booru);
+  final Booru _booru;
   @override
-  PopularPageState createState() => PopularPageState(); 
+  PopularPageState createState() => PopularPageState(_booru); 
 }
 
 class PopularPageState extends State<PopularPage> {
-  
-  PopularPageState() : _posts = [];
-  
+  PopularPageState(this._booru);
+  final Booru _booru;
   List<PostBase> _posts;
 
   @override
   void initState() {
     super.initState();
-    _fetchPostsList();
+    if (_booru != null) {
+      _fetchPostsList();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(4.0),
-        child: ListView(
-          children: <Widget>[
-            StaggeredGridView.countBuilder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              primary: false,
-              crossAxisCount: 3,
-              mainAxisSpacing: 0.0,
-              crossAxisSpacing: 0.0,
-              itemCount: _getItemCount(),
-              itemBuilder: (context, index) => _Tile(_posts[index]),
-              staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-              ),
-          ],
-        ),
+      body: SingleChildScrollView(
+        child: _buildStaggeredGrid(context),
       ),
     );
+  }
+
+  Widget _buildStaggeredGrid(BuildContext context) {
+    return StaggeredGridView.countBuilder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      primary: false,
+      crossAxisCount: _getCrossAxisCount(context),
+      staggeredTileBuilder: (_) => StaggeredTile.fit(1),
+      itemBuilder: (context, index) => _Tile(_posts[index]),
+      itemCount: _getItemCount(),
+    );
+  }
+
+  int _getCrossAxisCount(BuildContext context) {
+    int count = MediaQuery.of(context).size.width ~/ 130;
+    return count > 1 ? count : 1;
   }
 
   int _getItemCount() {
@@ -55,15 +63,25 @@ class PopularPageState extends State<PopularPage> {
   }
 
   void _fetchPostsList() async {
-    String scheme = 'https';
-    String host = 'yande.re';
-    var params = <String, dynamic>{
-      'period': '1w'
-      };
-    var posts = await MoeApi.instance.getPopularPosts(scheme, host, params);
+    List<PostBase> posts = [];
+    Map<String, dynamic> params = {};
+    if (_booru.type == BooruType.danbooru) {
+      params.addAll({
+        SCALE_KEY: SCALE_DAY
+      });
+      posts = await DanApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
+    } else if (_booru.type == BooruType.moebooru) {
+      params.addAll({
+        PERIOD_KEY: PERIOD_DAY
+      });
+      posts = await MoeApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
+    }
     setState(() {
       _posts = posts;
     });
+    if (posts != null && posts.isNotEmpty) {
+      DatabaseHelper.instance.insertPosts(posts); 
+    }
   }
 }
 

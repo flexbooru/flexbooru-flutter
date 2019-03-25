@@ -1,5 +1,24 @@
+import 'package:flutter/foundation.dart';
 
 enum BooruType { danbooru, moebooru, danbooru_one, gelbooru}
+
+class Booru extends Object {
+  Booru({
+    this.uid, 
+    @required this.type,
+    @required this.name,
+    @required this.scheme,
+    @required this.host,
+    @required this.hashSalt
+    });
+    
+  int uid = -1;
+  BooruType type = BooruType.danbooru;
+  String name;
+  String scheme = 'http';
+  String host;
+  String hashSalt; 
+}
 
 class BooruHelper {
 

@@ -3,6 +3,7 @@ import 'package:flexbooru_flutter/model/post_moe.dart';
 import 'package:flexbooru_flutter/model/pool_moe.dart';
 import 'package:flexbooru_flutter/model/tag_moe.dart';
 import 'package:flexbooru_flutter/network/http_core.dart';
+import 'package:flexbooru_flutter/constants.dart';
 
 class BaseUrlHelper {
   static String posts(String scheme, String host) {
@@ -62,7 +63,7 @@ class MoeApi {
           list: response.data, 
           scheme: scheme,
           host: host,
-          keyword: params['tags']);
+          keyword: params[PERIOD_KEY]);
     } else return [];
   }
 

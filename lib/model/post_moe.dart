@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart'; 
-import 'package:flexbooru_flutter/helper/booru_helper.dart';
+import 'package:flexbooru_flutter/helper/booru.dart';
 import 'post_base.dart';
 
 part 'post_moe.g.dart';

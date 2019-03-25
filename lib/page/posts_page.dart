@@ -4,48 +4,54 @@ import 'package:flexbooru_flutter/model/post_base.dart';
 import 'package:flexbooru_flutter/network/api/danbooru.dart';
 import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flexbooru_flutter/helper/database_helper.dart';
-
+import 'package:flexbooru_flutter/helper/database.dart';
+import 'package:flexbooru_flutter/helper/user.dart';
+import 'package:flexbooru_flutter/helper/booru.dart';
 
 class PostsPage extends StatefulWidget {
+  PostsPage(this._booru);
+  final Booru _booru;
   @override
-  PostsPageState createState() => PostsPageState(); 
+  PostsPageState createState() => PostsPageState(_booru); 
 }
 
 class PostsPageState extends State<PostsPage> {
-  
-  PostsPageState() : _posts = [];
-  
-  List<PostBase> _posts;
+  PostsPageState(this._booru);
+  final Booru _booru;
+  List<PostBase> _posts = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchPostsList();
+    if (_booru != null) {
+      _fetchPostsList(); 
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(4.0),
-        child: ListView(
-          children: <Widget>[
-            StaggeredGridView.countBuilder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              primary: false,
-              crossAxisCount: 3,
-              mainAxisSpacing: 0.0,
-              crossAxisSpacing: 0.0,
-              itemCount: _getItemCount(),
-              itemBuilder: (context, index) => _Tile(_posts[index]),
-              staggeredTileBuilder: (index) => StaggeredTile.fit(1),
-              ),
-          ],
-        ),
+      body: SingleChildScrollView(
+        child: _buildStaggeredGrid(context),
       ),
     );
+  }
+
+  Widget _buildStaggeredGrid(BuildContext context) {
+    return StaggeredGridView.countBuilder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      primary: false,
+      crossAxisCount: _getCrossAxisCount(context),
+      staggeredTileBuilder: (_) => StaggeredTile.fit(1),
+      itemBuilder: (context, index) => _Tile(_posts[index]),
+      itemCount: _getItemCount(),
+    );
+  }
+
+  int _getCrossAxisCount(BuildContext context) {
+    int count = MediaQuery.of(context).size.width ~/ 130;
+    return count > 1 ? count : 1;
   }
 
   int _getItemCount() {
@@ -56,18 +62,25 @@ class PostsPageState extends State<PostsPage> {
   }
 
   void _fetchPostsList() async {
-    String scheme = 'https';
-    String host = 'yande.re';
+    String scheme = _booru.scheme;
+    String host = _booru.host;
     var params = <String, dynamic>{
-      'tags': 'mash_kyrielight',
+      'tags': '',
       'limit': 50,
       'page': 1
     };
-    var posts = await MoeApi.instance.getPosts(scheme, host, params);
-    await DatabaseHelper.instance.insetPosts(posts);
+    List<PostBase> posts = [];
+    if (_booru.type == BooruType.danbooru) {
+      posts = await DanApi.instance.getPosts(scheme, host, params);
+    } else if (_booru.type == BooruType.moebooru) {
+      posts = await MoeApi.instance.getPosts(scheme, host, params);
+    }
     setState(() {
       _posts = posts;
     });
+    if (posts != null && posts.isNotEmpty) {
+      await DatabaseHelper.instance.insertPosts(posts); 
+    }
   }
 }
 

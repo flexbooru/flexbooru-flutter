@@ -3,6 +3,7 @@ import 'package:flexbooru_flutter/model/post_dan.dart';
 import 'package:flexbooru_flutter/model/pool_dan.dart';
 import 'package:flexbooru_flutter/model/tag_dan.dart';
 import 'package:flexbooru_flutter/network/http_core.dart';
+import 'package:flexbooru_flutter/constants.dart';
 
 class BaseUrlHelper {
   static String posts(String scheme, String host) {
@@ -62,7 +63,7 @@ class DanApi {
           list: response.data, 
           scheme: scheme,
           host: host,
-          keyword: params['tags']);
+          keyword: params[SCALE_KEY]);
     } else return [];
   }
 

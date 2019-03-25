@@ -6,6 +6,9 @@ import 'package:flexbooru_flutter/page/posts_page.dart';
 import 'package:flexbooru_flutter/page/popular_page.dart';
 import 'package:flexbooru_flutter/page/pools_page.dart';
 import 'package:flexbooru_flutter/page/tags_page.dart';
+import 'package:flexbooru_flutter/helper/user.dart';
+import 'package:flexbooru_flutter/helper/booru.dart';
+import 'package:flexbooru_flutter/helper/database.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -20,7 +23,10 @@ class DrawerItem {
 
 class HomeState extends State<Home> with TickerProviderStateMixin {
   
-  TabItem currentTab = TabItem.posts;
+  List<User> _users = [];
+  Future<List<Booru>> _boorus;
+
+  TabItem _currentTab = TabItem.posts;
 
   AnimationController _controller;
   Animation<double> _drawerContentsOpacity;
@@ -50,7 +56,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
 
   void _selectTab(TabItem tabItem) {
     setState(() {
-      currentTab = tabItem;
+      _currentTab = tabItem;
     });
   }
 
@@ -66,6 +72,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
       curve: Curves.fastOutSlowIn,
     );
     _drawerDetailsPosition = _controller.drive(_drawerDetailsTween);
+    _loadBoorus();
   }
 
   @override
@@ -76,22 +83,31 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    
     return WillPopScope(
       onWillPop: () async =>
-          !await navigatorKeys[currentTab].currentState.maybePop(),
+          !await navigatorKeys[_currentTab].currentState.maybePop(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(TabHelper.description(currentTab)),
+          title: Text(TabHelper.description(_currentTab)),
         ),
-        body: Stack(children: <Widget>[
-          _buildOffstageNavigator(TabItem.posts),
-          _buildOffstageNavigator(TabItem.popular),
-          _buildOffstageNavigator(TabItem.pools),
-          _buildOffstageNavigator(TabItem.tags),
-        ],),
+        body: FutureBuilder<List<Booru>>(
+          future: _boorus,
+          builder: (context, snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+                return Center(child: CircularProgressIndicator());
+              default:
+                if (snapshot.data.length > 0) {
+                  return _buildPage(snapshot.data[0]);
+                } else {
+                  return Center(child: Text('none booru'),);
+                }
+              }
+          }
+        ),
         bottomNavigationBar: BottomNavigation(
-          currentTab: currentTab,
+          currentTab: _currentTab,
           onSelectTab: _selectTab,
         ),
         drawer: Drawer(
@@ -113,24 +129,57 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildOffstageNavigator(TabItem tabItem) {
+  void _loadBoorus() async {
+    List<Booru> boorus = await DatabaseHelper.instance.getAllBoorus();
+    if (boorus == null || boorus.isEmpty) {
+      await DatabaseHelper.instance.insertBooru(
+        Booru(
+          type: BooruType.moebooru,
+          name: 'Sample',
+          scheme: 'https',
+          host: 'moe.fiepi.com',
+          hashSalt: 'onlymash--your-password--'
+        )
+      );
+      boorus = await DatabaseHelper.instance.getAllBoorus();
+    }
+    Future<List<Booru>> data = Future.value(boorus);
+    if (_boorus != data) {
+      setState(() {
+        _boorus = data; 
+      });
+    }
+  }
+
+  Widget _buildPage(Booru booru) {
+    Stack stack = Stack(
+          children: <Widget>[
+            _buildOffstageNavigator(TabItem.posts, booru),
+            _buildOffstageNavigator(TabItem.popular, booru),
+            _buildOffstageNavigator(TabItem.pools, booru),
+            _buildOffstageNavigator(TabItem.tags, booru),
+          ],);
+    return stack;
+  }
+
+  Widget _buildOffstageNavigator(TabItem tabItem, Booru booru) {
     Widget widget;
     switch (tabItem) {
       case TabItem.posts:
-        widget = PostsPage();
+        widget = PostsPage(booru);
         break;
       case TabItem.popular:
-        widget = PopularPage();
+        widget = PopularPage(booru);
         break;
       case TabItem.pools:
-        widget = PoolsPage();
+        widget = PoolsPage(booru);
         break;
       case TabItem.tags:
-        widget = TagsPage();
+        widget = TagsPage(booru);
         break;
     }
     return Offstage(
-      offstage: currentTab != tabItem,
+      offstage: _currentTab != tabItem,
       child: widget,
     );
   }
