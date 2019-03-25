@@ -95,7 +95,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
 
   bool exit = false;
   
-  Future<bool> _doubleClickBack(BuildContext context) {
+  Future<bool> _doubleClickBack() {
     if (_scaffoldKey.currentState.isDrawerOpen) return Future.value(false);
     if (!exit) {
       exit = true;
@@ -114,7 +114,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => _doubleClickBack(context),
+      onWillPop: () => _doubleClickBack(),
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
