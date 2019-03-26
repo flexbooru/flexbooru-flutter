@@ -1,5 +1,11 @@
 
+const ROUTE_ABOUT = '/about';
+const ROUTE_ACCOUNT = '/account';
+const ROUTE_ACCOUNT_CONFIG = '/account_config';
 const ROUTE_BOORUS = '/boorus';
+const ROUTE_BOORU_CONFIG = '/boorus/config';
+const ROUTE_COMMENTS = '/comments';
+const ROUTE_SETTINGS = '/settings';
 
 const PATTERN_DATE_DAN = "yyyy-MM-dd'T'HH:mm:ss.sss";
 const PATTERN_DATE_MOE_T = "yyyy-MM-dd'T'HH:mm:ss.sss'Z'";

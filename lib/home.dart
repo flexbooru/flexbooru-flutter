@@ -7,7 +7,6 @@ import 'package:flexbooru_flutter/page/posts_page.dart';
 import 'package:flexbooru_flutter/page/popular_page.dart';
 import 'package:flexbooru_flutter/page/pools_page.dart';
 import 'package:flexbooru_flutter/page/tags_page.dart';
-import 'package:flexbooru_flutter/page/boorus_page.dart';
 import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
@@ -19,9 +18,10 @@ class Home extends StatefulWidget {
 }
 
 class DrawerItem {
-  DrawerItem(this.icon, this.name);
+  DrawerItem(this.icon, this.name, this.routeName);
   final IconData icon;
   final String name;
+  final String routeName;
 }
 
 class HomeState extends State<Home> with TickerProviderStateMixin {
@@ -40,10 +40,10 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   bool _showDrawerContents = true;
 
   final _drawerItems = <DrawerItem>[
-    DrawerItem(OMIcons.accountCircle, "Account"),
-    DrawerItem(OMIcons.comment, "Comments"),
-    DrawerItem(OMIcons.settings, "Settings"),
-    DrawerItem(OMIcons.info, "About"),
+    DrawerItem(OMIcons.accountCircle, "Account", ROUTE_ACCOUNT),
+    DrawerItem(OMIcons.comment, "Comments", ROUTE_COMMENTS),
+    DrawerItem(OMIcons.settings, "Settings", ROUTE_SETTINGS),
+    DrawerItem(OMIcons.info, "About", ROUTE_ABOUT),
   ];
 
   static final Animatable<Offset> _drawerDetailsTween = Tween<Offset>(
@@ -95,8 +95,11 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
 
   bool exit = false;
   
-  Future<bool> _doubleClickBack() {
-    if (_scaffoldKey.currentState.isDrawerOpen) return Future.value(false);
+  Future<bool> _doubleClickBack(BuildContext context) {
+    if (_scaffoldKey.currentState.isDrawerOpen) {
+      Navigator.pop(context);
+      return Future.value(false);
+    }
     if (!exit) {
       exit = true;
       var duration = Duration(seconds: 2);
@@ -114,7 +117,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => _doubleClickBack(),
+      onWillPop: () => _doubleClickBack(context),
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -315,6 +318,9 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                       return ListTile(
                         leading: Icon(item.icon),
                         title: Text(item.name),
+                        onTap: () {
+                          Navigator.of(context).pushNamed(item.routeName);
+                        },
                       );
                     }).toList(),
                   ),
