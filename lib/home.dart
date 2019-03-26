@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:flexbooru_flutter/bottom_navigation.dart';
+import 'package:flexbooru_flutter/widget/boorus_drawer_header.dart';
 import 'package:flexbooru_flutter/page/posts_page.dart';
 import 'package:flexbooru_flutter/page/popular_page.dart';
 import 'package:flexbooru_flutter/page/pools_page.dart';
@@ -122,6 +123,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(TabHelper.description(_currentTab)),
+          backgroundColor: Colors.grey[50],
         ),
         body: FutureBuilder<List<Booru>>(
           future: _boorusFuture,
@@ -146,31 +148,8 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         drawer: Drawer(
           child: Column(
             children: <Widget>[
-              FutureBuilder<List<Booru>>(
-                future: _boorusFuture,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                      return _buildEmptyDrawerHeader();
-                    default :
-                      var data = snapshot.data;
-                      if ( data == null || data.isEmpty) {
-                        return _buildEmptyDrawerHeader();
-                      } else {
-                        return _buildDrawerHeader(data);
-                      }
-                  }
-                },
-              ),
-              MediaQuery.removePadding(
-                context: context,
-                // DrawerHeader consumes top MediaQuery padding.
-                removeTop: true,
-                child: Expanded(
-                  child: _buildDrawerItems(),
-                ),
-              )
+              _buildDrawerHeader(),
+              _buildDrawerItems(),
             ],
           ),
         ),
@@ -235,22 +214,46 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
       child: widget,
     );
   }
+
+  Widget _buildDrawerHeader() {
+    return FutureBuilder<List<Booru>>(
+      future: _boorusFuture,
+      builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              return _buildEmptyDrawerHeaderItems();
+            default :
+              var data = snapshot.data;
+              if ( data == null || data.isEmpty) {
+                return _buildEmptyDrawerHeaderItems();
+              } else {
+                return _buildDrawerHeaderItems(data);
+              }
+          }
+        },
+    );
+  }
   
-  Widget _buildDrawerHeader(List<Booru> boorus) {
-    Widget header;
+  Widget _buildDrawerHeaderItems(List<Booru> boorus) {
+    Widget headerItems;
     if (boorus != null && boorus.isNotEmpty) {
-      header = UserAccountsDrawerHeader(
-        accountName: Text(boorus[0].name),
-        accountEmail: Text("${boorus[0].scheme}://${boorus[0].host}"),
-        currentAccountPicture: CircleAvatar(
+      headerItems = BoorusDrawerHeader(
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+        ),
+        booruName: Text(boorus[0].name),
+        booruUrl: Text("${boorus[0].scheme}://${boorus[0].host}"),
+        currentBooruPicture: CircleAvatar(
           child: Text(
             boorus[0].name[0],
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 42.0),
+            style: TextStyle(
+              fontSize: 42.0),
             ),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.pink[300],
         ),
-        otherAccountsPictures: boorus.map<Widget>((booru) {
+        otherBoorusPictures: boorus.map<Widget>((booru) {
           GestureDetector(
             dragStartBehavior: DragStartBehavior.down,
             onTap: () {
@@ -264,7 +267,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24.0),
                 ),
-              backgroundColor: Colors.white,
+              backgroundColor: Colors.grey[50],
               ),
             ),
           );
@@ -279,15 +282,18 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         },
       );
     } else {
-      header =_buildEmptyDrawerHeader();
+      headerItems =_buildEmptyDrawerHeaderItems();
     }
-    return header;
+    return headerItems;
   }
 
-  Widget _buildEmptyDrawerHeader() {
-    return UserAccountsDrawerHeader(
-      accountName: Text('none booru'),
-      accountEmail: Text(''),
+  Widget _buildEmptyDrawerHeaderItems() {
+    return BoorusDrawerHeader(
+      decoration: BoxDecoration(
+          color: Colors.grey[50],
+        ),
+      booruName: Text('none booru'),
+      booruUrl: Text(''),
       margin: EdgeInsets.zero,
       onDetailsPressed: () {
         _showDrawerContents = !_showDrawerContents;
@@ -300,55 +306,61 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget _buildDrawerItems() {
-    return ListView(
-      dragStartBehavior: DragStartBehavior.down,
-      padding: const EdgeInsets.only(top: 8.0),
-      children: <Widget>[
-        Stack(
+    return MediaQuery.removePadding(
+      context: context,
+      // DrawerHeader consumes top MediaQuery padding.
+      removeTop: true,
+      child: Expanded(
+        child: ListView(
+          dragStartBehavior: DragStartBehavior.down,
+          padding: const EdgeInsets.only(top: 8.0),
           children: <Widget>[
             Stack(
               children: <Widget>[
-                // The initial contents of the drawer.
-                FadeTransition(
-                  opacity: _drawerContentsOpacity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: _drawerItems.map<Widget>((DrawerItem item) {
-                      return ListTile(
-                        leading: Icon(item.icon),
-                        title: Text(item.name),
-                        onTap: () {
-                          Navigator.of(context).pushNamed(item.routeName);
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ),
-                SlideTransition(
-                  position: _drawerDetailsPosition,
-                  child: FadeTransition(
-                    opacity: ReverseAnimation(_drawerContentsOpacity),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        ListTile(
-                          leading: const Icon(Icons.settings),
-                          title: const Text('Manage boorus'),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(ROUTE_BOORUS);
-                          },
-                        ),
-                      ],
+                Stack(
+                  children: <Widget>[
+                    FadeTransition(
+                      opacity: _drawerContentsOpacity,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: _drawerItems.map<Widget>((DrawerItem item) {
+                          return ListTile(
+                            leading: Icon(item.icon),
+                            title: Text(item.name),
+                            onTap: () {
+                              Navigator.of(context).pushNamed(item.routeName);
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
+                    SlideTransition(
+                      position: _drawerDetailsPosition,
+                     child: FadeTransition(
+                        opacity: ReverseAnimation(_drawerContentsOpacity),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            ListTile(
+                              leading: const Icon(Icons.settings),
+                              title: const Text('Manage boorus'),
+                              onTap: () {
+                                Navigator.of(context).pushNamed(ROUTE_BOORUS);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                 ],
                 ),
               ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }

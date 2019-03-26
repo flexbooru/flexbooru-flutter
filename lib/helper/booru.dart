@@ -62,4 +62,23 @@ class BooruHelper {
     }
     return type;
   }
+
+  static String name(BooruType type) {
+    String name = "";
+    switch (type) {
+      case BooruType.danbooru:
+        name = "Danbooru";
+        break;
+      case BooruType.moebooru:
+        name = "Moebooru";
+        break;
+      case BooruType.danbooru_one:
+        name = "Danbooru 1.x";
+        break;
+      case BooruType.gelbooru:
+        name = "Gelbooru";
+        break;
+    }
+    return name;
+  }
 }

@@ -8,7 +8,10 @@ class AccountConfigPageState extends State<AccountConfigPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Account config"),),
+      appBar: AppBar(
+        title: Text("Account config"),
+        backgroundColor: Colors.grey[50],
+        ),
       body: Center(child: Text('Account config')),
     );
   }

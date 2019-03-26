@@ -8,7 +8,10 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Settings"),),
+      appBar: AppBar(
+        title: Text("Settings"),
+        backgroundColor: Colors.grey[50],
+        ),
       body: Center(child: Text('Settings')),
     );
   }

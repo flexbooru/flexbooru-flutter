@@ -8,7 +8,10 @@ class BooruConfigPageState extends State<BooruConfigPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Booru config"),),
+      appBar: AppBar(
+        title: Text("Booru config"),
+        backgroundColor: Colors.grey[50],
+        ),
       body: Center(child: Text('Booru config')),
     );
   }

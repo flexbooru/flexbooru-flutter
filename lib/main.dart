@@ -13,14 +13,21 @@ import 'package:flexbooru_flutter/page/settings_page.dart';
 void main() => runApp(App());
 
 class App extends StatelessWidget {
-  final SystemUiOverlayStyle _currentStyle = SystemUiOverlayStyle.light;
+  final SystemUiOverlayStyle _currentStyle = SystemUiOverlayStyle.light.copyWith(
+    statusBarColor: Colors.grey[50],
+    statusBarBrightness: Brightness.light,
+    // systemNavigationBarColor: Colors.grey[50],
+    // systemNavigationBarIconBrightness: Brightness.light,
+  );
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(_currentStyle);
     return MaterialApp(
       title: 'Flexbooru',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primaryColor: Colors.deepPurple,
+        primaryColorDark: Colors.grey[50],
+        primaryColorBrightness: Brightness.light,
       ),
       home: Home(),
       routes: <String, WidgetBuilder> {
