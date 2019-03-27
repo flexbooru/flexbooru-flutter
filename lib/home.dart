@@ -317,44 +317,40 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                Stack(
-                  children: <Widget>[
-                    FadeTransition(
-                      opacity: _drawerContentsOpacity,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: _drawerItems.map<Widget>((DrawerItem item) {
-                          return ListTile(
-                            leading: Icon(item.icon),
-                            title: Text(item.name),
-                            onTap: () {
-                              Navigator.of(context).pushNamed(item.routeName);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    SlideTransition(
-                      position: _drawerDetailsPosition,
-                     child: FadeTransition(
-                        opacity: ReverseAnimation(_drawerContentsOpacity),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            ListTile(
-                              leading: const Icon(Icons.settings),
-                              title: const Text('Manage boorus'),
-                              onTap: () {
-                                Navigator.of(context).pushNamed(ROUTE_BOORUS);
-                              },
-                            ),
-                          ],
+                FadeTransition(
+                  opacity: _drawerContentsOpacity,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _drawerItems.map<Widget>((DrawerItem item) {
+                      return ListTile(
+                        leading: Icon(item.icon),
+                        title: Text(item.name),
+                        onTap: () {
+                          Navigator.of(context).pushNamed(item.routeName);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SlideTransition(
+                  position: _drawerDetailsPosition,
+                  child: FadeTransition(
+                    opacity: ReverseAnimation(_drawerContentsOpacity),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        ListTile(
+                          leading: const Icon(Icons.settings),
+                          title: const Text('Manage boorus'),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(ROUTE_BOORUS);
+                          },
                         ),
-                      ),
+                      ],
                     ),
-                 ],
+                  ),
                 ),
               ],
             ),
