@@ -5,6 +5,8 @@ import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
 import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'base_state.dart';
 
 class PoolsPage extends StatefulWidget {
   PoolsPage(this._booru);
@@ -13,15 +15,21 @@ class PoolsPage extends StatefulWidget {
   State<StatefulWidget> createState() => PoolsPageState(_booru);
 }
 
-class PoolsPageState extends State<PoolsPage> {
+class PoolsPageState extends BaseState<PoolsPage> {
   PoolsPageState(this._booru);
-  final Booru _booru;
+  Booru _booru;
   List<PoolBase> _pools = [];
 
   @override
   void initState() {
     super.initState();
     if (_booru == null) return;
+    _fechPoolsList();
+  }
+
+  @override
+  void onActiveBooruChanged(int uid) async {
+    _booru = await DatabaseHelper.instance.getBooruByUid(uid);
     _fechPoolsList();
   }
 
@@ -51,12 +59,30 @@ class PoolsPageState extends State<PoolsPage> {
             child: ListTile(
               isThreeLine: false,
               dense: false,
-              leading: ExcludeSemantics(child: CircleAvatar(child: Text(pool.getCreatorName()[0]))),
+              leading: _buildAvatar(pool),
               title: Text(pool.getPoolName()),
             ),
           );
         }).toList(),
       ),
     );
+  }
+
+  Widget _buildAvatar(PoolBase pool) {
+    if (_booru.type == BooruType.moebooru) {
+      return ExcludeSemantics(
+        child: CircleAvatar(
+          backgroundImage: CachedNetworkImageProvider(
+            "${_booru.scheme}://${_booru.host}/data/avatars/${pool.getCreatorId()}.jpg"
+          ),
+        ),
+      );
+    } else {
+      return ExcludeSemantics(
+        child: CircleAvatar(
+          child: Text(pool.getCreatorName()[0]),
+        ),
+      );
+    }
   }
 }

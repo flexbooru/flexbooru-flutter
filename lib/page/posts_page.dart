@@ -5,8 +5,9 @@ import 'package:flexbooru_flutter/network/api/danbooru.dart';
 import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
-import 'package:flexbooru_flutter/helper/user.dart';
+import 'package:flexbooru_flutter/helper/settings.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
+import 'base_state.dart';
 
 class PostsPage extends StatefulWidget {
   PostsPage(this._booru, this._keyword);
@@ -16,9 +17,9 @@ class PostsPage extends StatefulWidget {
   PostsPageState createState() => PostsPageState(_booru, _keyword); 
 }
 
-class PostsPageState extends State<PostsPage> {
+class PostsPageState extends BaseState<PostsPage> {
   PostsPageState(this._booru, this._keyword);
-  final Booru _booru;
+  Booru _booru;
   final String _keyword;
 
   List<PostBase> _posts = [];
@@ -98,6 +99,12 @@ class PostsPageState extends State<PostsPage> {
     if (posts != null && posts.isNotEmpty) {
       DatabaseHelper.instance.insertPosts(posts); 
     }
+  }
+
+  @override
+  void onActiveBooruChanged(int uid) async {
+    _booru = await DatabaseHelper.instance.getBooruByUid(uid);
+    _initPosts();
   }
 }
 

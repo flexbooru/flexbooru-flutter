@@ -8,6 +8,7 @@ import 'package:flexbooru_flutter/helper/database.dart';
 import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
 import 'package:flexbooru_flutter/constants.dart';
+import 'base_state.dart';
 
 class PopularPage extends StatefulWidget {
   PopularPage(this._booru);
@@ -16,9 +17,9 @@ class PopularPage extends StatefulWidget {
   PopularPageState createState() => PopularPageState(_booru); 
 }
 
-class PopularPageState extends State<PopularPage> {
+class PopularPageState extends BaseState<PopularPage> {
   PopularPageState(this._booru);
-  final Booru _booru;
+  Booru _booru;
   List<PostBase> _posts;
   String scale = SCALE_DAY;
   String period = PERIOD_DAY;
@@ -108,6 +109,11 @@ class PopularPageState extends State<PopularPage> {
     if (posts != null && posts.isNotEmpty) {
       DatabaseHelper.instance.insertPosts(posts); 
     }
+  }
+  @override
+  void onActiveBooruChanged(int uid) async {
+    _booru = await DatabaseHelper.instance.getBooruByUid(uid);
+    _initPosts();
   }
 }
 

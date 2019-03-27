@@ -129,6 +129,25 @@ class DatabaseHelper {
     return boorus;
   }
 
+  Future<Booru> getBooruByUid(int uid) async {
+    Booru booru;
+    Database db = await database;
+    var data = await db.query('boorus', 
+    where: '`uid` = ?',
+    whereArgs: [uid]);
+    if (data != null && data.isNotEmpty) {
+      var item = data[0];
+      booru = Booru(
+        uid: item['uid'] as int,
+        type : BooruHelper.type(item['type'] as int),
+        name: item['name'] as String,
+        scheme: item['scheme'] as String,
+        host: item['host'] as String,
+        hashSalt: item['hash_salt'] as String);
+    }
+    return booru;
+  }
+
   Future<int> insertBooru(Booru booru) async {
     Database db = await database;
     var result = await db.insert(

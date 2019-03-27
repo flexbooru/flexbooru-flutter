@@ -5,6 +5,7 @@ import 'package:flexbooru_flutter/network/api/moebooru.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
 import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
+import 'base_state.dart';
 
 class TagsPage extends StatefulWidget {
   TagsPage(this._booru);
@@ -13,15 +14,21 @@ class TagsPage extends StatefulWidget {
   State<StatefulWidget> createState() => TagsPageState(_booru);
 }
 
-class TagsPageState extends State<TagsPage> {
+class TagsPageState extends BaseState<TagsPage> {
   TagsPageState(this._booru);
-  final Booru _booru;
+  Booru _booru;
   List<TagBase> _tags = [];
 
   @override
   void initState() {
     super.initState();
     if (_booru == null) return;
+    _fechTagsList();
+  }
+
+  @override
+  void onActiveBooruChanged(int uid) async {
+    _booru = await DatabaseHelper.instance.getBooruByUid(uid);
     _fechTagsList();
   }
 

@@ -13,6 +13,7 @@ import 'package:flexbooru_flutter/helper/user.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
 import 'package:flexbooru_flutter/constants.dart';
+import 'package:flexbooru_flutter/helper/settings.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -33,6 +34,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   List<User> _users = [];
   List<Booru> _boorus;
   Future<List<Booru>> _boorusFuture;
+  Booru _activeBooru;
 
   TabItem _currentTab = TabItem.posts;
 
@@ -136,8 +138,8 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                 return Center(child: CircularProgressIndicator());
               default:
                 _boorus = snapshot.data;
-                if (snapshot.data.length > 0) {
-                  return _buildPage(snapshot.data[0]);
+                if (_activeBooru != null) {
+                  return _buildPage();
                 } else {
                   return Center(child: Text('none booru'),);
                 }
@@ -183,33 +185,55 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         _boorusFuture = data; 
       });
     }
+    _loadActiveBooru();
   }
 
-  Widget _buildPage(Booru booru) {
-    Stack stack = Stack(
-          children: <Widget>[
-            _buildOffstageNavigator(TabItem.posts, booru),
-            _buildOffstageNavigator(TabItem.popular, booru),
-            _buildOffstageNavigator(TabItem.pools, booru),
-            _buildOffstageNavigator(TabItem.tags, booru),
-          ],);
-    return stack;
+  void _loadActiveBooru() async {
+    if (_boorus == null || _boorus.isEmpty) {
+      setState(() {
+        _activeBooru = null;
+      });
+      return;
+    }
+    int uid = await Settings.instance.getActiveBooruUid();
+    if (uid < 0) {
+      uid = _boorus[0].uid;
+    }
+    _boorus.forEach((booru) {
+      if(booru.uid == uid) {
+        setState(() {
+          _activeBooru = booru;
+        });
+        return;
+      }
+    });
   }
 
-  Widget _buildOffstageNavigator(TabItem tabItem, Booru booru) {
+  Widget _buildPage() {
+    return Stack(
+      children: <Widget>[
+        _buildOffstageNavigator(TabItem.posts),
+        _buildOffstageNavigator(TabItem.popular),
+        _buildOffstageNavigator(TabItem.pools),
+        _buildOffstageNavigator(TabItem.tags),
+      ],
+    );
+  }
+
+  Widget _buildOffstageNavigator(TabItem tabItem) {
     Widget widget;
     switch (tabItem) {
       case TabItem.posts:
-        widget = PostsPage(booru, _keyword);
+        widget = PostsPage(_activeBooru, _keyword);
         break;
       case TabItem.popular:
-        widget = PopularPage(booru);
+        widget = PopularPage(_activeBooru);
         break;
       case TabItem.pools:
-        widget = PoolsPage(booru);
+        widget = PoolsPage(_activeBooru);
         break;
       case TabItem.tags:
-        widget = TagsPage(booru);
+        widget = TagsPage(_activeBooru);
         break;
     }
     return Offstage(
@@ -219,7 +243,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget _buildDrawerHeader() {
-    if (_boorus == null || _boorus.isEmpty) {
+    if (_boorus == null || _boorus.isEmpty || _activeBooru == null) {
       return _buildEmptyDrawerHeaderItems();
     } else {
       return _buildDrawerHeaderItems(_boorus);
@@ -231,22 +255,24 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         decoration: BoxDecoration(
           color: Colors.grey[50],
         ),
-        booruName: Text(boorus[0].name),
-        booruUrl: Text("${boorus[0].scheme}://${boorus[0].host}"),
+        booruName: Text(_activeBooru.name),
+        booruUrl: Text("${_activeBooru.scheme}://${_activeBooru.host}"),
         currentBooruPicture: CircleAvatar(
           backgroundImage: CachedNetworkImageProvider(
-            "${boorus[0].scheme}://${boorus[0].host}/favicon.ico"
+            "${_activeBooru.scheme}://${_activeBooru.host}/favicon.ico"
           ),
         ),
         margin: EdgeInsets.zero,
-        onDetailsPressed: () {
-          _showDrawerContents = !_showDrawerContents;
-          if (_showDrawerContents)
-            _controller.reverse();
-          else
-            _controller.forward();
-        },
+        onDetailsPressed: () => _onDetailsPressed(),
       );
+  }
+
+  void _onDetailsPressed() {
+    _showDrawerContents = !_showDrawerContents;
+    if (_showDrawerContents)
+      _controller.reverse();
+    else
+      _controller.forward();
   }
 
   Widget _buildEmptyDrawerHeaderItems() {
@@ -257,13 +283,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
       booruName: Text('none booru'),
       booruUrl: Text(''),
       margin: EdgeInsets.zero,
-      onDetailsPressed: () {
-        _showDrawerContents = !_showDrawerContents;
-        if (_showDrawerContents)
-          _controller.reverse();
-        else
-          _controller.forward();
-      },
+      onDetailsPressed: () => _onDetailsPressed(),
     );
   }
 
@@ -326,7 +346,11 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         title: Text(item.name),
         subtitle: Text("${item.scheme}://${item.host}"),
         onTap: () {
-          
+          setState(() {
+            _activeBooru = item;
+          });
+          Settings.instance.setActiveBooruUid(item.uid);
+          _onDetailsPressed();
         },
       )
       );
