@@ -28,6 +28,7 @@ class App extends StatelessWidget {
         primaryColor: Colors.deepPurple,
         primaryColorDark: Colors.grey[50],
         primaryColorBrightness: Brightness.light,
+        accentColor: Colors.pinkAccent,
       ),
       home: Home(),
       routes: <String, WidgetBuilder> {
@@ -35,7 +36,7 @@ class App extends StatelessWidget {
         ROUTE_ACCOUNT: (context) => AccountPage(),
         ROUTE_ACCOUNT_CONFIG: (context) => AccountConfigPage(),
         ROUTE_BOORUS: (context) => BoorusPage(),
-        ROUTE_BOORU_CONFIG: (context) => BooruConfigPage(),
+        ROUTE_BOORU_CONFIG: (context) => BooruConfigPage(null),
         ROUTE_COMMENTS: (context) => CommentsPage(),
         ROUTE_SETTINGS: (context) => SettingsPage(),
       },

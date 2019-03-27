@@ -161,7 +161,7 @@ class _BooruDetailsState extends State<_BooruDetails> with SingleTickerProviderS
               child: Transform.rotate(
                 angle: _animation.value * math.pi,
                 child: Icon(
-                  Icons.arrow_drop_up,
+                  Icons.arrow_drop_down,
                   color: theme.textTheme.body1.color,
                   semanticLabel: widget.isOpen
                     ? 'Hide boorus'

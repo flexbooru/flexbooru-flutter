@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flexbooru_flutter/bottom_navigation.dart';
 import 'package:flexbooru_flutter/widget/boorus_drawer_header.dart';
 import 'package:flexbooru_flutter/page/posts_page.dart';
@@ -134,6 +135,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
               case ConnectionState.waiting:
                 return Center(child: CircularProgressIndicator());
               default:
+                _boorus = snapshot.data;
                 if (snapshot.data.length > 0) {
                   return _buildPage(snapshot.data[0]);
                 } else {
@@ -217,62 +219,25 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget _buildDrawerHeader() {
-    return FutureBuilder<List<Booru>>(
-      future: _boorusFuture,
-      builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              return _buildEmptyDrawerHeaderItems();
-            default :
-              var data = snapshot.data;
-              if ( data == null || data.isEmpty) {
-                return _buildEmptyDrawerHeaderItems();
-              } else {
-                return _buildDrawerHeaderItems(data);
-              }
-          }
-        },
-    );
+    if (_boorus == null || _boorus.isEmpty) {
+      return _buildEmptyDrawerHeaderItems();
+    } else {
+      return _buildDrawerHeaderItems(_boorus);
+    }
   }
   
   Widget _buildDrawerHeaderItems(List<Booru> boorus) {
-    Widget headerItems;
-    if (boorus != null && boorus.isNotEmpty) {
-      headerItems = BoorusDrawerHeader(
+    return BoorusDrawerHeader(
         decoration: BoxDecoration(
           color: Colors.grey[50],
         ),
         booruName: Text(boorus[0].name),
         booruUrl: Text("${boorus[0].scheme}://${boorus[0].host}"),
         currentBooruPicture: CircleAvatar(
-          child: Text(
-            boorus[0].name[0],
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 42.0),
-            ),
-          backgroundColor: Colors.pink[300],
+          backgroundImage: CachedNetworkImageProvider(
+            "${boorus[0].scheme}://${boorus[0].host}/favicon.ico"
+          ),
         ),
-        otherBoorusPictures: boorus.map<Widget>((booru) {
-          GestureDetector(
-            dragStartBehavior: DragStartBehavior.down,
-            onTap: () {
-
-            },
-            child: Semantics(
-              label: booru.name,
-              child: CircleAvatar(
-                child: Text(
-                booru.name[0],
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24.0),
-                ),
-              backgroundColor: Colors.grey[50],
-              ),
-            ),
-          );
-        }).toList(),
         margin: EdgeInsets.zero,
         onDetailsPressed: () {
           _showDrawerContents = !_showDrawerContents;
@@ -282,10 +247,6 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
             _controller.forward();
         },
       );
-    } else {
-      headerItems =_buildEmptyDrawerHeaderItems();
-    }
-    return headerItems;
   }
 
   Widget _buildEmptyDrawerHeaderItems() {
@@ -341,15 +302,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        ListTile(
-                          leading: const Icon(Icons.settings),
-                          title: const Text('Manage boorus'),
-                          onTap: () {
-                            Navigator.of(context).pushNamed(ROUTE_BOORUS);
-                          },
-                        ),
-                      ],
+                      children: _buildBooruItems(),
                     ),
                   ),
                 ),
@@ -359,5 +312,34 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+  List<Widget> _buildBooruItems() {
+    List<Widget> items = [];
+    _boorus?.forEach((item) {
+      items.add(
+        ListTile(
+        leading: CircleAvatar(
+          backgroundImage: CachedNetworkImageProvider(
+            "${item.scheme}://${item.host}/favicon.ico"
+          ),
+        ),
+        title: Text(item.name),
+        subtitle: Text("${item.scheme}://${item.host}"),
+        onTap: () {
+          
+        },
+      )
+      );
+    });
+    items.add(
+      ListTile(
+        leading: const Icon(Icons.settings),
+        title: const Text('Manage boorus'),
+        onTap: () {
+          Navigator.of(context).pushNamed(ROUTE_BOORUS);
+        },
+      )
+    );
+    return items;
   }
 }

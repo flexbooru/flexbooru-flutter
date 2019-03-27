@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flexbooru_flutter/helper/booru.dart';
 import 'package:flexbooru_flutter/helper/database.dart';
+import 'package:flexbooru_flutter/constants.dart';
 
 class BoorusPage extends StatefulWidget {
   @override
@@ -29,14 +30,37 @@ class BoorusPageState extends State<BoorusPage> {
         backgroundColor: Colors.grey[50],
         elevation: 1.0,
         actions: <Widget>[
-          IconButton(
+          PopupMenuButton<int>(
             icon: const Icon(Icons.note_add),
-            tooltip: 'Add booru',
-            onPressed: () {
+            onSelected: (value) {
+              switch (value) {
+                case 0:
+                  
+                  break;
+                case 1:
 
+                  break;
+                default:
+                  Navigator.of(context).pushNamed(ROUTE_BOORU_CONFIG);
+              }
             },
-          )
-        ],),
+            itemBuilder: (context) => <PopupMenuItem<int>> [
+              const PopupMenuItem<int>(
+                value: 0,
+                child: Text('Scan QR code'),
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text('Import from Clipboard'),
+              ),
+              const PopupMenuItem<int>(
+                value: 2,
+                child: Text('Manual settings'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: FutureBuilder<List<Booru>>(
         future: _boorusFuture,
         builder: (context, snapshot) {
