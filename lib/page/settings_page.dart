@@ -11,6 +11,7 @@ class SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: Text("Settings"),
         backgroundColor: Colors.grey[50],
+        elevation: 1.0,
         ),
       body: Center(child: Text('Settings')),
     );

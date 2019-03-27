@@ -27,6 +27,7 @@ class BoorusPageState extends State<BoorusPage> {
       appBar: AppBar(
         title: Text("Manage boorus"),
         backgroundColor: Colors.grey[50],
+        elevation: 1.0,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.note_add),

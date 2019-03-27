@@ -124,6 +124,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         appBar: AppBar(
           title: Text(TabHelper.description(_currentTab)),
           backgroundColor: Colors.grey[50],
+          elevation: 1.0,
         ),
         body: FutureBuilder<List<Booru>>(
           future: _boorusFuture,

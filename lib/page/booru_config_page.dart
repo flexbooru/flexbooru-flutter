@@ -11,6 +11,7 @@ class BooruConfigPageState extends State<BooruConfigPage> {
       appBar: AppBar(
         title: Text("Booru config"),
         backgroundColor: Colors.grey[50],
+        elevation: 1.0,
         ),
       body: Center(child: Text('Booru config')),
     );
