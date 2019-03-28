@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flexbooru_flutter/model/post_base.dart';
-import 'package:flexbooru_flutter/network/api/danbooru.dart';
-import 'package:flexbooru_flutter/network/api/moebooru.dart';
+import 'package:flexbooru/model/post_base.dart';
+import 'package:flexbooru/network/api/danbooru.dart';
+import 'package:flexbooru/network/api/moebooru.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flexbooru_flutter/helper/database.dart';
-import 'package:flexbooru_flutter/helper/user.dart';
-import 'package:flexbooru_flutter/helper/booru.dart';
-import 'package:flexbooru_flutter/constants.dart';
+import 'package:flexbooru/helper/database.dart';
+import 'package:flexbooru/helper/user.dart';
+import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/constants.dart';
 import 'base_state.dart';
 
 class PopularPage extends StatefulWidget {

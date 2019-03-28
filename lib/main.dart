@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flexbooru_flutter/home.dart';
-import 'package:flexbooru_flutter/constants.dart';
-import 'package:flexbooru_flutter/page/boorus_page.dart';
-import 'package:flexbooru_flutter/page/booru_config_page.dart';
-import 'package:flexbooru_flutter/page/about_page.dart';
-import 'package:flexbooru_flutter/page/account_config_page.dart';
-import 'package:flexbooru_flutter/page/account_page.dart';
-import 'package:flexbooru_flutter/page/comments_page.dart';
-import 'package:flexbooru_flutter/page/settings_page.dart';
+import 'package:flexbooru/home.dart';
+import 'package:flexbooru/constants.dart';
+import 'package:flexbooru/page/boorus_page.dart';
+import 'package:flexbooru/page/booru_config_page.dart';
+import 'package:flexbooru/page/about_page.dart';
+import 'package:flexbooru/page/account_config_page.dart';
+import 'package:flexbooru/page/account_page.dart';
+import 'package:flexbooru/page/comments_page.dart';
+import 'package:flexbooru/page/settings_page.dart';
 
 void main() => runApp(App());
 

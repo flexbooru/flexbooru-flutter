@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flexbooru_flutter/helper/booru.dart';
-import 'package:flexbooru_flutter/helper/database.dart';
+import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/helper/database.dart';
 
 class BooruConfigPage extends StatefulWidget {
   BooruConfigPage(this._booru);

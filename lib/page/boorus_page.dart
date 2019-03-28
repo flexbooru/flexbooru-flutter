@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flexbooru_flutter/helper/booru.dart';
-import 'package:flexbooru_flutter/helper/database.dart';
-import 'package:flexbooru_flutter/constants.dart';
+import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/helper/database.dart';
+import 'package:flexbooru/constants.dart';
 
 class BoorusPage extends StatefulWidget {
   @override

@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flexbooru_flutter/bottom_navigation.dart';
-import 'package:flexbooru_flutter/widget/boorus_drawer_header.dart';
-import 'package:flexbooru_flutter/page/posts_page.dart';
-import 'package:flexbooru_flutter/page/popular_page.dart';
-import 'package:flexbooru_flutter/page/pools_page.dart';
-import 'package:flexbooru_flutter/page/tags_page.dart';
-import 'package:flexbooru_flutter/helper/user.dart';
-import 'package:flexbooru_flutter/helper/booru.dart';
-import 'package:flexbooru_flutter/helper/database.dart';
-import 'package:flexbooru_flutter/constants.dart';
-import 'package:flexbooru_flutter/helper/settings.dart';
+import 'package:flexbooru/bottom_navigation.dart';
+import 'package:flexbooru/widget/boorus_drawer_header.dart';
+import 'package:flexbooru/page/posts_page.dart';
+import 'package:flexbooru/page/popular_page.dart';
+import 'package:flexbooru/page/pools_page.dart';
+import 'package:flexbooru/page/tags_page.dart';
+import 'package:flexbooru/helper/user.dart';
+import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/helper/database.dart';
+import 'package:flexbooru/constants.dart';
+import 'package:flexbooru/helper/settings.dart';
 
 class Home extends StatefulWidget {
   @override

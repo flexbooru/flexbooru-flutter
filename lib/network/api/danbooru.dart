@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flexbooru_flutter/model/post_dan.dart';
-import 'package:flexbooru_flutter/model/pool_dan.dart';
-import 'package:flexbooru_flutter/model/tag_dan.dart';
-import 'package:flexbooru_flutter/network/http_core.dart';
-import 'package:flexbooru_flutter/constants.dart';
+import 'package:flexbooru/model/post_dan.dart';
+import 'package:flexbooru/model/pool_dan.dart';
+import 'package:flexbooru/model/tag_dan.dart';
+import 'package:flexbooru/network/http_core.dart';
+import 'package:flexbooru/constants.dart';
 
 class BaseUrlHelper {
   static String posts(String scheme, String host) {

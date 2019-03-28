@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flexbooru_flutter/constants.dart';
+import 'package:flexbooru/constants.dart';
 import 'pool_base.dart';
   
 part 'pool_dan.g.dart';

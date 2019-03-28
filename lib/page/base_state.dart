@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flexbooru_flutter/helper/settings.dart';
+import 'package:flexbooru/helper/settings.dart';
 
 abstract class BaseState<T extends StatefulWidget> extends State<T> with ActiveBooruListener {
   

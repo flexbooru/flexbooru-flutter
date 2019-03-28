@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flexbooru_flutter/helper/booru.dart';
-import 'package:flexbooru_flutter/constants.dart';
+import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/constants.dart';
 import 'post_base.dart';
 
 part 'post_dan.g.dart';

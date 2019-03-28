@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flexbooru_flutter/model/post_base.dart';
-import 'package:flexbooru_flutter/model/post_dan.dart';
-import 'package:flexbooru_flutter/model/post_moe.dart';
-import 'package:flexbooru_flutter/helper/booru.dart';
-import 'package:flexbooru_flutter/helper/user.dart';
+import 'package:flexbooru/model/post_base.dart';
+import 'package:flexbooru/model/post_dan.dart';
+import 'package:flexbooru/model/post_moe.dart';
+import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/helper/user.dart';
 
 class DatabaseHelper {
 

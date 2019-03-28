@@ -1,4 +1,4 @@
-# flexbooru_flutter
+# flexbooru
 
 Flexbooru - Flutter version.
 
