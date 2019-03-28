@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flexbooru/model/tag_base.dart';
 import 'package:flexbooru/network/api/danbooru.dart';
@@ -29,7 +30,10 @@ class TagsPageState extends BaseState<TagsPage> {
   @override
   void onActiveBooruChanged(int uid) async {
     _booru = await DatabaseHelper.instance.getBooruByUid(uid);
-    _fechTagsList();
+    Timer.periodic(Duration(milliseconds: 250), (timer) {  
+      timer.cancel();
+      _fechTagsList();
+    });
   }
 
   void _fechTagsList() async {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flexbooru/model/post_base.dart';
@@ -104,7 +105,10 @@ class PostsPageState extends BaseState<PostsPage> {
   @override
   void onActiveBooruChanged(int uid) async {
     _booru = await DatabaseHelper.instance.getBooruByUid(uid);
-    _initPosts();
+    Timer.periodic(Duration(milliseconds: 210), (timer) {  
+      timer.cancel();
+      _initPosts();
+    });
   }
 }
 

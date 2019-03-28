@@ -3,10 +3,10 @@ import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/database.dart';
 
 class BooruConfigPage extends StatefulWidget {
-  BooruConfigPage(this._booru);
-  final Booru _booru;
+  BooruConfigPage({this.booru});
+  final Booru booru;
   @override
-  State<StatefulWidget> createState() => BooruConfigPageState(_booru);
+  State<StatefulWidget> createState() => BooruConfigPageState(booru);
 }
 
 class BooruConfigPageState extends State<BooruConfigPage> {
@@ -59,9 +59,10 @@ class BooruConfigPageState extends State<BooruConfigPage> {
             tooltip: 'Delete',
             onPressed: () {
               if (_uid >= 0) {
-                DatabaseHelper.instance.deleteBooruByUid(_uid);
+                _deleteBooru(_uid);
+              } else {
+                Navigator.pop(context);
               }
-              Navigator.pop(context);
             },
           ),
           IconButton(
@@ -103,8 +104,7 @@ class BooruConfigPageState extends State<BooruConfigPage> {
                 _booru.host = _host;
                 _booru.hashSalt = _hashSalt;
               }
-              DatabaseHelper.instance.insertBooru(_booru);
-              Navigator.pop(context);
+              _saveBooru(context);
             },
           ),
         ],
@@ -113,6 +113,25 @@ class BooruConfigPageState extends State<BooruConfigPage> {
         children: _buildListItems(context)
       ),
     );
+  }
+
+  void _saveBooru(BuildContext context) async {
+    int result = -1;
+    if (_uid < 0) {
+      result = await DatabaseHelper.instance.insertBooru(_booru);
+    } else {
+      result = await DatabaseHelper.instance.updateBooru(_booru);
+    }
+    if (result >= 0) {
+      Navigator.pop(context, 'success'); 
+    }
+  }
+
+  void _deleteBooru(int uid) async {
+    int result = await DatabaseHelper.instance.deleteBooruByUid(_uid);
+    if (result > 0) {
+      Navigator.pop(context, 'success'); 
+    }
   }
 
   List<Widget> _buildListItems(BuildContext context) {

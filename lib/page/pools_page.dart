@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flexbooru/model/pool_base.dart';
 import 'package:flexbooru/network/api/danbooru.dart';
@@ -30,7 +31,10 @@ class PoolsPageState extends BaseState<PoolsPage> {
   @override
   void onActiveBooruChanged(int uid) async {
     _booru = await DatabaseHelper.instance.getBooruByUid(uid);
-    _fechPoolsList();
+    Timer.periodic(Duration(milliseconds: 230), (timer) {  
+      timer.cancel();
+      _fechPoolsList();
+    });
   }
 
   void _fechPoolsList() async {

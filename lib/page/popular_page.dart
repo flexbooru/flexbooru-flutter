@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flexbooru/model/post_base.dart';
@@ -113,7 +114,10 @@ class PopularPageState extends BaseState<PopularPage> {
   @override
   void onActiveBooruChanged(int uid) async {
     _booru = await DatabaseHelper.instance.getBooruByUid(uid);
-    _initPosts();
+    Timer.periodic(Duration(milliseconds: 220), (timer) {  
+      timer.cancel();
+      _initPosts();
+    });
   }
 }
 

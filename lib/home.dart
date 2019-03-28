@@ -27,7 +27,7 @@ class DrawerItem {
   final String routeName;
 }
 
-class HomeState extends State<Home> with TickerProviderStateMixin {
+class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String _keyword = '';
@@ -83,11 +83,13 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     );
     _drawerDetailsPosition = _controller.drive(_drawerDetailsTween);
     _loadBoorus();
+    DatabaseHelper.instance.setBooruListener(this);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    DatabaseHelper.instance.setBooruListener(null);
     super.dispose();
   }
 
@@ -198,14 +200,21 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
     int uid = await Settings.instance.getActiveBooruUid();
     if (uid < 0) {
       uid = _boorus[0].uid;
+      Settings.instance.setActiveBooruUid(uid);
     }
+    Booru activeBooru;
     _boorus.forEach((booru) {
       if(booru.uid == uid) {
-        setState(() {
-          _activeBooru = booru;
-        });
+        activeBooru = booru;
         return;
       }
+    });
+    if (activeBooru == null) {
+      activeBooru = _boorus[0];
+      Settings.instance.setActiveBooruUid(activeBooru.uid);
+    }
+    setState(() {
+      _activeBooru = activeBooru;
     });
   }
 
@@ -360,10 +369,16 @@ class HomeState extends State<Home> with TickerProviderStateMixin {
         leading: const Icon(Icons.settings),
         title: const Text('Manage boorus'),
         onTap: () {
+          // _onDetailsPressed();
           Navigator.of(context).pushNamed(ROUTE_BOORUS);
         },
       )
     );
     return items;
+  }
+
+  @override
+  void onBooruChanged() {
+    _loadBoorus();
   }
 }

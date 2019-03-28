@@ -36,7 +36,7 @@ class App extends StatelessWidget {
         ROUTE_ACCOUNT: (context) => AccountPage(),
         ROUTE_ACCOUNT_CONFIG: (context) => AccountConfigPage(),
         ROUTE_BOORUS: (context) => BoorusPage(),
-        ROUTE_BOORU_CONFIG: (context) => BooruConfigPage(null),
+        ROUTE_BOORU_CONFIG: (context) => BooruConfigPage(),
         ROUTE_COMMENTS: (context) => CommentsPage(),
         ROUTE_SETTINGS: (context) => SettingsPage(),
       },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/constants.dart';
+import 'package:flexbooru/page/booru_config_page.dart';
 
 class BoorusPage extends StatefulWidget {
   @override
@@ -20,6 +21,22 @@ class BoorusPageState extends State<BoorusPage> {
     setState(() {
       _boorusFuture = DatabaseHelper.instance.getAllBoorus();
     });
+  }
+
+  void _manulSettings(BuildContext context) async {
+    var arg = await Navigator.of(context).pushNamed(ROUTE_BOORU_CONFIG);
+    if (arg == 'success') {
+      _loadBoorus();
+    }
+  }
+
+  void _editBooru(BuildContext context, Booru booru) async {
+    var arg = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => BooruConfigPage(booru: booru))
+      );
+    if (arg == 'success') {
+      _loadBoorus();
+    }
   }
 
   @override
@@ -41,7 +58,7 @@ class BoorusPageState extends State<BoorusPage> {
 
                   break;
                 default:
-                  Navigator.of(context).pushNamed(ROUTE_BOORU_CONFIG);
+                  _manulSettings(context);
               }
             },
             itemBuilder: (context) => <PopupMenuItem<int>> [
@@ -110,7 +127,7 @@ class BoorusPageState extends State<BoorusPage> {
                   icon: const Icon(Icons.edit),
                   tooltip: 'Edit booru',
                   onPressed: () {
-
+                    _editBooru(context, booru);
                   },
                 ),
                 ],
@@ -119,7 +136,7 @@ class BoorusPageState extends State<BoorusPage> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+          padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 3.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween, 
             children: <Widget>[
@@ -135,6 +152,7 @@ class BoorusPageState extends State<BoorusPage> {
             ],
           ),
         ),
+        Divider(height: 1.0,),
       ],
     );
   }

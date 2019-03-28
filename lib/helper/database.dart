@@ -9,6 +9,10 @@ import 'package:flexbooru/model/post_moe.dart';
 import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/user.dart';
 
+abstract class BooruListener {
+  void onBooruChanged();
+}
+
 class DatabaseHelper {
 
   DatabaseHelper._internal();
@@ -65,7 +69,7 @@ class DatabaseHelper {
         'keyword': post.keyword,
         'post': jsonEncode(post.toJson())},
       conflictAlgorithm: ConflictAlgorithm.replace);
-    return result;
+    return Future.value(result);
   }
 
   Future<List<PostBase>> getPosts({
@@ -126,7 +130,7 @@ class DatabaseHelper {
         host: item['host'] as String,
         hashSalt: item['hash_salt'] as String));
     });
-    return boorus;
+    return Future.value(boorus);
   }
 
   Future<Booru> getBooruByUid(int uid) async {
@@ -145,12 +149,18 @@ class DatabaseHelper {
         host: item['host'] as String,
         hashSalt: item['hash_salt'] as String);
     }
-    return booru;
+    return Future.value(booru);
+  }
+  
+  BooruListener _booruListener;
+
+  void setBooruListener(BooruListener listener) {
+    _booruListener = listener;
   }
 
   Future<int> insertBooru(Booru booru) async {
     Database db = await database;
-    var result = await db.insert(
+    int result = await db.insert(
       'boorus',
       <String, dynamic> {
         'type': BooruHelper.index(booru.type),
@@ -159,30 +169,26 @@ class DatabaseHelper {
         'host': booru.host,
         'hash_salt': booru.hashSalt },
       conflictAlgorithm: ConflictAlgorithm.replace );
-    return result;
+    _booruListener?.onBooruChanged();
+    return Future.value(result);
   }
 
   Future<int> updateBooru(Booru booru) async {
     Database db = await database;
-    var result = await db.update(
-      'boorus',
-      <String, dynamic> {
-        'uid': booru.uid,
-        'type': BooruHelper.index(booru.type),
-        'name': booru.name,
-        'scheme': booru.scheme,
-        'host': booru.host,
-        'hash_salt': booru.hashSalt },
-      conflictAlgorithm: ConflictAlgorithm.replace );
-    return result;
+    String sql = "UPDATE OR ABORT `boorus` SET `type` = ?, `name` = ?,`scheme` = ?,`host` = ?,`hash_salt` = ? WHERE `uid` = ?";
+    int result = await db.rawUpdate(sql, [BooruHelper.index(booru.type), booru.name, booru.scheme, booru.host, booru.hashSalt, booru.uid]);
+    _booruListener?.onBooruChanged();
+    print('$result');
+    return Future.value(result);
   }
 
   Future<int> deleteBooruByUid(int uid) async {
     Database db = await database;
-    var result = await db.delete(
+    int result = await db.delete(
       'boorus',
       where: 'uid = ?',
       whereArgs: [uid]);
-    return result;
+    _booruListener?.onBooruChanged();
+    return Future.value(result);
   }
 }
