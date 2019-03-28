@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flexbooru/widget/custom_dialog.dart';
 import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/database.dart';
 
@@ -155,8 +156,11 @@ class BooruConfigPageState extends State<BooruConfigPage> {
               _textEditController.text = _name;
               showDialog<String>(
                 context: context,
-                builder: (context) => AlertDialog(
+                builder: (context) => CustomAlertDialog(
                   title: Text('Name'),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0))
+                  ),
                   content: TextField(
                     maxLines: 1,
                     maxLength: 50,
@@ -262,8 +266,11 @@ class BooruConfigPageState extends State<BooruConfigPage> {
               _textEditController.text = _host;
               showDialog<String>(
                 context: context,
-                builder: (context) => AlertDialog(
+                builder: (context) => CustomAlertDialog(
                   title: Text('Host'),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0))
+                  ),
                   content: TextField(
                     maxLines: 1,
                     maxLength: 50,
@@ -308,11 +315,13 @@ class BooruConfigPageState extends State<BooruConfigPage> {
         _textEditController.text = _hashSalt;
         showDialog<String>(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (context) => CustomAlertDialog(
             title: Text('Hash salt'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8.0))
+            ),
             content: TextField(
-              maxLines: 1,
-              maxLength: 50,
+              maxLength: 100,
               controller: _textEditController,
             ),
             actions: <Widget>[

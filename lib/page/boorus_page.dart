@@ -81,21 +81,21 @@ class BoorusPageState extends State<BoorusPage> {
       body: FutureBuilder<List<Booru>>(
         future: _boorusFuture,
         builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.waiting:
-                    default :
-                      var data = snapshot.data;
-                      if ( data == null || data.isEmpty) {
-                        return Center(child: Text('none booru'));
-                      } else {
-                        return ListView.builder(
-                          itemCount: data.length,
-                          itemBuilder: (context, index) => _buildTile(context, data[index]),
-                        );
-                      }
-                  }
-                },
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            default :
+              var data = snapshot.data;
+              if ( data == null || data.isEmpty) {
+                return Center(child: Text('none booru'));
+              } else {
+                return ListView.builder(
+                  itemCount: data.length,
+                  itemBuilder: (context, index) => _buildTile(context, data[index]),
+                );
+              }
+          }
+        },
       ),
     );
   }
