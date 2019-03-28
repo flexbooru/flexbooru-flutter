@@ -319,7 +319,10 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final minWidth = MediaQuery.of(context).size.width - 48.0;
+    double minWidth = MediaQuery.of(context).size.width - 48.0;
+    if (minWidth > 480.0) {
+      minWidth = 480.0;
+    }
     final DialogTheme dialogTheme = DialogTheme.of(context);
     return AnimatedPadding(
       padding: MediaQuery.of(context).viewInsets + const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
