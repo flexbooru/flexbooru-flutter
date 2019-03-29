@@ -9,6 +9,7 @@ import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/helper/user.dart';
 import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/constants.dart';
+import 'package:flexbooru/helper/settings.dart';
 import 'base_state.dart';
 
 class PopularPage extends StatefulWidget {
@@ -18,26 +19,39 @@ class PopularPage extends StatefulWidget {
   PopularPageState createState() => PopularPageState(_booru); 
 }
 
-class PopularPageState extends BaseState<PopularPage> {
+class PopularPageState extends State<PopularPage> with ActiveBooruListener {
   PopularPageState(this._booru);
   Booru _booru;
   List<PostBase> _posts;
-  String scale = SCALE_DAY;
-  String period = PERIOD_DAY;
+  String _scale = SCALE_DAY;
+  String _period = PERIOD_DAY;
+  String _keyword = SCALE_DAY;
+
+  LoadingStatus _loadingStatus = LoadingStatus.idle;
   
   @override
   void initState() {
     super.initState();
+    Settings.instance.registerActiveBooruListener(this);
     if (_booru != null) {
       _initPosts();
     }
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    Settings.instance.unregisterActiveBooruListener(this);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: _buildStaggeredGrid(context),
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: _buildStaggeredGrid(context),
+        ),
       ),
     );
   }
@@ -67,20 +81,19 @@ class PopularPageState extends BaseState<PopularPage> {
   }
 
   void _initPosts() async {
-    String keyword;
     switch (_booru.type) {
       case BooruType.danbooru:
-        keyword = scale;
+        _keyword = _scale;
         break;
       case BooruType.moebooru:
-        keyword = period;
+        _keyword = _period;
         break;
       default:
     }
     var posts = await DatabaseHelper.instance.getPosts(
       type: _booru.type,
       host: _booru.host,
-      keyword: keyword);
+      keyword: _keyword);
       if (posts == null || posts.isEmpty) {
         _fetchPostsList();
       } else {
@@ -90,25 +103,33 @@ class PopularPageState extends BaseState<PopularPage> {
       }
   }
 
-  void _fetchPostsList() async {
+  Future<void> _fetchPostsList() async {
     List<PostBase> posts = [];
     Map<String, dynamic> params = {};
+    params.addAll({
+      SCALE_KEY: _scale,
+      PERIOD_KEY: _period
+    });
     if (_booru.type == BooruType.danbooru) {
-      params.addAll({
-        SCALE_KEY: scale
-      });
+      _keyword = _scale;
       posts = await DanApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
     } else if (_booru.type == BooruType.moebooru) {
-      params.addAll({
-        PERIOD_KEY: period
-      });
+      _keyword = _period;
       posts = await MoeApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
     }
-    setState(() {
-      _posts = posts;
-    });
-    if (posts != null && posts.isNotEmpty) {
-      DatabaseHelper.instance.insertPosts(posts); 
+    if (posts != null) {
+      setState(() {
+        _loadingStatus = LoadingStatus.idle;
+      });
+      await DatabaseHelper.instance.deletePosts(_booru.type, _booru.host, _keyword);
+      await DatabaseHelper.instance.insertPosts(posts);
+      setState(() {
+        _posts = posts;
+      });
+    } else {
+      setState(() {
+        _loadingStatus = LoadingStatus.failed;
+      });
     }
   }
   @override
@@ -118,6 +139,13 @@ class PopularPageState extends BaseState<PopularPage> {
       timer.cancel();
       _initPosts();
     });
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _loadingStatus = LoadingStatus.refreshing;
+    });
+    await _fetchPostsList();
   }
 }
 
@@ -139,7 +167,7 @@ class _Tile extends StatelessWidget {
                   aspectRatio: post.getPostWidth()/post.getPostHeight(),
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => CircularProgressIndicator(),
+                    placeholder: (context, url) => Placeholder(color: Colors.grey[200],),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                     imageUrl: post.getPreviewUrl()),
                 ),

@@ -22,8 +22,13 @@ class PostsPageState extends BaseState<PostsPage> {
   PostsPageState(this._booru, this._keyword);
   Booru _booru;
   final String _keyword;
-
   List<PostBase> _posts = [];
+
+  int _page = 1;
+  int _limit = 20;
+  int _lastResponseSize = 0;
+  LoadingStatus _loadingStatus = LoadingStatus.idle;
+  ScrollController _scrollController =ScrollController();
 
   @override
   void initState() {
@@ -36,10 +41,47 @@ class PostsPageState extends BaseState<PostsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: _buildStaggeredGrid(context),
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              _buildStaggeredGrid(context),
+              _buildFooter(),
+            ],
+          ),
+          controller: _scrollController,
+        ),
       ),
     );
+  }
+
+  Widget _buildFooter() {
+    if (_loadingStatus == LoadingStatus.loading) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    if (_loadingStatus == LoadingStatus.failed) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: RaisedButton(
+            child: Text('Retry'),
+            onPressed: () {
+              _fetchPostsList();
+              setState(() {
+                _loadingStatus = LoadingStatus.loading;
+              });
+            },
+          ),
+        ),
+      );
+    }
+    return Center();
   }
 
   Widget _buildStaggeredGrid(BuildContext context) {
@@ -80,13 +122,13 @@ class PostsPageState extends BaseState<PostsPage> {
       }
   }
 
-  void _fetchPostsList() async {
+  Future<int> _fetchPostsList() async {
     String scheme = _booru.scheme;
     String host = _booru.host;
     var params = <String, dynamic>{
       'tags': _keyword,
-      'limit': 50,
-      'page': 1
+      'limit': _limit,
+      'page': _page
     };
     List<PostBase> posts = [];
     if (_booru.type == BooruType.danbooru) {
@@ -94,12 +136,36 @@ class PostsPageState extends BaseState<PostsPage> {
     } else if (_booru.type == BooruType.moebooru) {
       posts = await MoeApi.instance.getPosts(scheme, host, params);
     }
-    setState(() {
-      _posts = posts;
-    });
     if (posts != null && posts.isNotEmpty) {
-      DatabaseHelper.instance.insertPosts(posts); 
+      if (_page == 1) {
+        await DatabaseHelper.instance.deletePosts(_booru.type, _booru.host, _keyword);
+      }
+      await DatabaseHelper.instance.insertPosts(posts); 
     }
+    if (posts == null) {
+      setState(() {
+        _loadingStatus = LoadingStatus.failed;
+      });
+      _lastResponseSize = 0;
+      if (_page == 1) {
+        setState(() {
+          _posts = [];
+        });
+      }
+    } else {
+      _loadingStatus = LoadingStatus.idle;
+      _lastResponseSize = posts.length;
+      if (_page != 1) {
+        setState(() {
+          _posts.addAll(posts);
+        });
+      } else {
+        setState(() {
+          _posts = posts;
+        });
+      }
+    }
+    return _lastResponseSize;
   }
 
   @override
@@ -109,6 +175,30 @@ class PostsPageState extends BaseState<PostsPage> {
       timer.cancel();
       _initPosts();
     });
+  }
+
+  @override
+  LoadingStatus getLoadingStatus() => _loadingStatus;
+
+  @override
+  ScrollController getScrollController() => _scrollController;
+
+  @override
+  void loadMoreData() {
+    setState(() {
+      _loadingStatus = LoadingStatus.loading;
+    });
+    _page += 1;
+    _fetchPostsList();
+  }
+
+  @override
+  Future<void> refreshData() async {
+    setState(() {
+      _loadingStatus = LoadingStatus.refreshing;
+    });
+    _page = 1;
+    await _fetchPostsList();
   }
 }
 
@@ -130,7 +220,7 @@ class _Tile extends StatelessWidget {
                   aspectRatio: post.getPostWidth()/post.getPostHeight(),
                   child: CachedNetworkImage(
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => CircularProgressIndicator(),
+                    placeholder: (context, url) => Placeholder(color: Colors.grey[200],),
                     errorWidget: (context, url, error) => Icon(Icons.error),
                     imageUrl: post.getPreviewUrl()),
                 ),

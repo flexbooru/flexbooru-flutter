@@ -44,7 +44,7 @@ class MoeApi {
           scheme: scheme,
           host: host,
           keyword: params['tags']);
-    } else return [];
+    } else return null;
   }
 
   Future<List<PostMoe>> getPopularPosts(
@@ -64,7 +64,7 @@ class MoeApi {
           scheme: scheme,
           host: host,
           keyword: params[PERIOD_KEY]);
-    } else return [];
+    } else return null;
   }
 
   Future<List<PoolMoe>> getPools(
@@ -80,7 +80,7 @@ class MoeApi {
       }
       if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
         return getPoolMoeList(response.data);
-      } else return [];
+      } else return null;
   }
 
   Future<List<TagMoe>> getTags(
@@ -96,6 +96,6 @@ class MoeApi {
       }
       if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
         return getTagMoeList(response.data);
-      } else return [];
+      } else return null;
   }
 }

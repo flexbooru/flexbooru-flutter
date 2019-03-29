@@ -46,7 +46,7 @@ class DatabaseHelper {
     await db.execute("CREATE UNIQUE INDEX `index_posts_type_id_host_keyword` ON `posts` (`type`, `post_id`, `host`, `keyword`)");
   }
 
-  void insertPosts(List<PostBase> posts) async {
+  Future<void> insertPosts(List<PostBase> posts) async {
     if (posts == null || posts.isEmpty) return;
     try {
       posts.forEach((post) {
@@ -55,6 +55,12 @@ class DatabaseHelper {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  Future<int> deletePosts(BooruType type, String host, String keyword) async {
+    Database db = await database;
+    String sql = 'DELETE FROM `posts` WHERE `type` = ? AND `host` = ? AND `keyword` = ?';
+    return db.rawDelete(sql, [BooruHelper.index(type), host, keyword]);
   }
 
   Future<int> insertPost(PostBase post) async {

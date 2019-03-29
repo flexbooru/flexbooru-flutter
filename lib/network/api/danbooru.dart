@@ -44,7 +44,7 @@ class DanApi {
           scheme: scheme,
           host: host,
           keyword: params['tags']);
-    } else return [];
+    } else return null;
   }
 
   Future<List<PostDan>> getPopularPosts(
@@ -64,7 +64,7 @@ class DanApi {
           scheme: scheme,
           host: host,
           keyword: params[SCALE_KEY]);
-    } else return [];
+    } else return null;
   }
 
   Future<List<PoolDan>> getPools(
@@ -80,7 +80,7 @@ class DanApi {
       }
       if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
         return getPoolDanList(response.data);
-      } else return [];
+      } else return null;
   }
 
   Future<List<TagDan>> getTags(
@@ -96,6 +96,6 @@ class DanApi {
       }
       if (response != null && response.statusCode >= 200 && response.statusCode < 300) {
         return getTagDanList(response.data);
-      } else return [];
+      } else return null;
   }
 }
