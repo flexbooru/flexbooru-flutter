@@ -21,12 +21,24 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+Properties properties = new Properties()
+properties.load(rootProject.file(".gradle/keystore.properties").newDataInputStream())
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 28
+
+    signingConfigs {
+        release {
+            storeFile rootProject.file(".gradle/flexbooru-flutter.jks")
+            keyAlias properties.getProperty("KEY_ALIAS")
+            keyPassword properties.getProperty("KEY_PASS")
+            storePassword properties.getProperty("STORE_PASS")
+        }
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -47,8 +59,7 @@ android {
 
     buildTypes {
         release {
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
