@@ -50,7 +50,7 @@ class PoolMoe extends PoolBase {
   int getCreatorId() => userId;
 
   @override
-  String getCreatorName() => '';
+  String getCreatorName() => getPoolName();
 
   @override
   String getPoolDate() {

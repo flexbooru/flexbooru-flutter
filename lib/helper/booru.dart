@@ -51,12 +51,9 @@ class BooruHelper {
         type = BooruType.moebooru;
         break;
       case 2:
-        type = BooruType.danbooru;
-        break;
-      case 3:
         type = BooruType.danbooru_one;
         break;
-      case 4:
+      case 3:
         type = BooruType.gelbooru;
         break;
     }

@@ -4,12 +4,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flexbooru/model/post_base.dart';
 import 'package:flexbooru/network/api/danbooru.dart';
 import 'package:flexbooru/network/api/moebooru.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flexbooru/network/api/danbooru_one.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/helper/user.dart';
 import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/constants.dart';
 import 'package:flexbooru/helper/settings.dart';
+import 'package:flexbooru/widget/post_tile.dart';
 import 'base_state.dart';
 
 class PopularPage extends StatefulWidget {
@@ -23,9 +24,12 @@ class PopularPageState extends State<PopularPage> with ActiveBooruListener {
   PopularPageState(this._booru);
   Booru _booru;
   List<PostBase> _posts;
-  String _scale = SCALE_DAY;
+  String _scale = SCALE_MONTH;
   String _period = PERIOD_DAY;
   String _keyword = SCALE_DAY;
+  String _year = '2019';
+  String _month = '03';
+  String _day = '30';
 
   LoadingStatus _loadingStatus = LoadingStatus.idle;
   
@@ -63,7 +67,7 @@ class PopularPageState extends State<PopularPage> with ActiveBooruListener {
       primary: false,
       crossAxisCount: _getCrossAxisCount(context),
       staggeredTileBuilder: (_) => StaggeredTile.fit(1),
-      itemBuilder: (context, index) => _Tile(_posts[index]),
+      itemBuilder: (context, index) => PostTile(_posts[index]),
       itemCount: _getItemCount(),
     );
   }
@@ -88,6 +92,9 @@ class PopularPageState extends State<PopularPage> with ActiveBooruListener {
       case BooruType.moebooru:
         _keyword = _period;
         break;
+      case BooruType.danbooru_one:
+        _keyword = _scale;
+        break;
       default:
     }
     var posts = await DatabaseHelper.instance.getPosts(
@@ -105,17 +112,27 @@ class PopularPageState extends State<PopularPage> with ActiveBooruListener {
 
   Future<void> _fetchPostsList() async {
     List<PostBase> posts = [];
-    Map<String, dynamic> params = {};
-    params.addAll({
-      SCALE_KEY: _scale,
-      PERIOD_KEY: _period
-    });
     if (_booru.type == BooruType.danbooru) {
       _keyword = _scale;
+      Map<String, dynamic> params = {
+        SCALE_KEY: _scale,
+        'date': "$_year-$_month-$_day"
+      };
       posts = await DanApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
     } else if (_booru.type == BooruType.moebooru) {
       _keyword = _period;
+      Map<String, dynamic> params = {
+        PERIOD_KEY: _period
+      };
       posts = await MoeApi.instance.getPopularPosts(_booru.scheme, _booru.host, params);
+    } else if (_booru.type == BooruType.danbooru_one) {
+      _keyword = _scale;
+      Map<String, dynamic> params = {
+        'day': _day,
+        'month': _month,
+        'year': _year
+      };
+      posts = await DanOneApi.instance.getPopularPosts(_booru.scheme, _booru.host, _scale, params);
     }
     if (posts != null) {
       setState(() {
@@ -146,55 +163,5 @@ class PopularPageState extends State<PopularPage> with ActiveBooruListener {
       _loadingStatus = LoadingStatus.refreshing;
     });
     await _fetchPostsList();
-  }
-}
-
-class _Tile extends StatelessWidget {
-
-  const _Tile(this.post);
-
-  final PostBase post;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Container(
-                child: AspectRatio(
-                  aspectRatio: post.getPostWidth()/post.getPostHeight(),
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Placeholder(color: Colors.grey[200],),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    imageUrl: post.getPreviewUrl()),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('#${post.getPostId()}'),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                            '${post.getPostWidth()} x ${post.getPostHeight()}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                  ),
-                  
-                ],
-            ),
-          )
-        ],
-      ),
-    );
   }
 }

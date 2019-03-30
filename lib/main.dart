@@ -9,6 +9,7 @@ import 'package:flexbooru/page/account_config_page.dart';
 import 'package:flexbooru/page/account_page.dart';
 import 'package:flexbooru/page/comments_page.dart';
 import 'package:flexbooru/page/settings_page.dart';
+import 'package:flutter_user_agent/flutter_user_agent.dart';
 
 void main() => runApp(App());
 
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
   );
   @override
   Widget build(BuildContext context) {
+    initUserAgentState();
     SystemChrome.setSystemUIOverlayStyle(_currentStyle);
     return MaterialApp(
       title: 'Flexbooru',
@@ -41,6 +43,15 @@ class App extends StatelessWidget {
         ROUTE_SETTINGS: (context) => SettingsPage(),
       },
     );
+  }
+
+  Future<void> initUserAgentState() async {
+    try {
+      await FlutterUserAgent.init();
+      webViewUserAgent = FlutterUserAgent.webViewUserAgent;
+    } on PlatformException {
+      print('<error>');
+    }
   }
 }
 

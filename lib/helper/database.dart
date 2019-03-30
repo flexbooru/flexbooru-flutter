@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:flexbooru/model/post_base.dart';
 import 'package:flexbooru/model/post_dan.dart';
 import 'package:flexbooru/model/post_moe.dart';
+import 'package:flexbooru/model/post_dan_one.dart';
 import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/user.dart';
 
@@ -109,6 +110,19 @@ class DatabaseHelper {
         data.forEach((item) {
           Map<String, dynamic> json = jsonDecode(item['post'] as String);
           var post = PostMoe.fromJson(json);
+          post.uid = item['uid'] as int;
+          post.type = indexType;
+          post.postId = item['post_id'] as int;
+          post.scheme = item['scheme'] as String;
+          post.host = item['host'] as String;
+          post.keyword = item['keyword'] as String;
+          posts.add(post);
+        });
+        break;
+      case BooruType.danbooru_one:
+        data.forEach((item) {
+          Map<String, dynamic> json = jsonDecode(item['post'] as String);
+          var post = PostDanOne.fromJson(json);
           post.uid = item['uid'] as int;
           post.type = indexType;
           post.postId = item['post_id'] as int;

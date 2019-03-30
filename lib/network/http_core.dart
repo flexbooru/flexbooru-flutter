@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flexbooru/constants.dart' show webViewUserAgent;
 
 class HttpCore {
   
@@ -9,7 +10,7 @@ class HttpCore {
     _dio.options.connectTimeout = 10000;
     _dio.options.receiveTimeout = 10000;
     _dio.options.headers = {
-      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36"
+      "User-Agent": webViewUserAgent
       };
   }
 
@@ -38,6 +39,7 @@ class HttpCore {
         paramStr = paramStr.substring(0, paramStr.length - 1);
         url += paramStr;
       }
+      print(url);
       response = await _dio.get(url);
     } else if (method == POST) {
       if (params != null && params.isNotEmpty) {

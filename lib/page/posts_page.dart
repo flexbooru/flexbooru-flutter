@@ -4,10 +4,11 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flexbooru/model/post_base.dart';
 import 'package:flexbooru/network/api/danbooru.dart';
 import 'package:flexbooru/network/api/moebooru.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flexbooru/network/api/danbooru_one.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/helper/settings.dart';
 import 'package:flexbooru/helper/booru.dart';
+import 'package:flexbooru/widget/post_tile.dart';
 import 'base_state.dart';
 
 class PostsPage extends StatefulWidget {
@@ -91,7 +92,7 @@ class PostsPageState extends BaseState<PostsPage> {
       primary: false,
       crossAxisCount: _getCrossAxisCount(context),
       staggeredTileBuilder: (_) => StaggeredTile.fit(1),
-      itemBuilder: (context, index) => _Tile(_posts[index]),
+      itemBuilder: (context, index) => PostTile(_posts[index]),
       itemCount: _getItemCount(),
     );
   }
@@ -113,13 +114,13 @@ class PostsPageState extends BaseState<PostsPage> {
       type: _booru.type,
       host: _booru.host,
       keyword: _keyword);
-      if (posts == null || posts.isEmpty) {
-        _fetchPostsList();
-      } else {
-        setState(() {
-          _posts = posts;
-        });
-      }
+    if (posts == null || posts.isEmpty) {
+     _fetchPostsList();
+    } else {
+      setState(() {
+        _posts = posts;
+      });
+    }
   }
 
   Future<int> _fetchPostsList() async {
@@ -135,6 +136,8 @@ class PostsPageState extends BaseState<PostsPage> {
       posts = await DanApi.instance.getPosts(scheme, host, params);
     } else if (_booru.type == BooruType.moebooru) {
       posts = await MoeApi.instance.getPosts(scheme, host, params);
+    } else if (_booru.type == BooruType.danbooru_one) {
+      posts = await DanOneApi.instance.getPosts(scheme, host, params);
     }
     if (posts != null && posts.isNotEmpty) {
       if (_page == 1) {
@@ -199,54 +202,5 @@ class PostsPageState extends BaseState<PostsPage> {
     });
     _page = 1;
     await _fetchPostsList();
-  }
-}
-
-class _Tile extends StatelessWidget {
-
-  const _Tile(this.post);
-
-  final PostBase post;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Container(
-                child: AspectRatio(
-                  aspectRatio: post.getPostWidth()/post.getPostHeight(),
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Placeholder(color: Colors.grey[200],),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                    imageUrl: post.getPreviewUrl()),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('#${post.getPostId()}'),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                            '${post.getPostWidth()} x ${post.getPostHeight()}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                  ),
-                ],
-            ),
-          )
-        ],
-      ),
-    );
   }
 }

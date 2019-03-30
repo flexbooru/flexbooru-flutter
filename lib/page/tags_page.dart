@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flexbooru/model/tag_base.dart';
 import 'package:flexbooru/network/api/danbooru.dart';
 import 'package:flexbooru/network/api/moebooru.dart';
+import 'package:flexbooru/network/api/danbooru_one.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/helper/user.dart';
 import 'package:flexbooru/helper/booru.dart';
@@ -52,6 +53,8 @@ class TagsPageState extends BaseState<TagsPage> {
       tags = await DanApi.instance.getTags(_booru.scheme, _booru.host, params);
     } else if (_booru.type == BooruType.moebooru) {
       tags = await MoeApi.instance.getTags(_booru.scheme, _booru.host, params);
+    } else if (_booru.type == BooruType.danbooru_one) {
+      tags = await DanOneApi.instance.getTags(_booru.scheme, _booru.host, params);
     }
     if (tags == null) {
       setState(() {
@@ -92,10 +95,15 @@ class TagsPageState extends BaseState<TagsPage> {
                   padding: EdgeInsets.symmetric(vertical: 4.0),
                   children: _tags.map<Widget>((TagBase tag) {
                     return MergeSemantics(
-                      child: ListTile(
-                        isThreeLine: false,
-                        dense: false,
-                        title: Text(tag.getTagName()),
+                      child: Column(
+                        children: <Widget>[
+                          ListTile(
+                            isThreeLine: false,
+                            dense: false,
+                            title: Text(tag.getTagName()),
+                          ),
+                          Divider(height: 1.0,),
+                        ],
                       ),
                     );
                   }).toList(),

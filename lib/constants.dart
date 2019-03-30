@@ -13,11 +13,13 @@ const PATTERN_DATE_MOE = "yyyy-MM-dd HH:mm:ss";
 
 const SCALE_KEY = 'scale';
 const SCALE_DAY = 'day';
-const SCALE_WEEK = 'day';
-const SCALE_MONTH = 'day';
+const SCALE_WEEK = 'week';
+const SCALE_MONTH = 'month';
 
 const PERIOD_KEY = 'period';
 const PERIOD_DAY = '1d';
 const PERIOD_WEEK = '1w';
 const PERIOD_MONTH = '1m';
 const PERIOD_YEAR = '1y';
+
+String webViewUserAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36";

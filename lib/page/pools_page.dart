@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flexbooru/model/pool_base.dart';
 import 'package:flexbooru/network/api/danbooru.dart';
+import 'package:flexbooru/network/api/danbooru_one.dart';
 import 'package:flexbooru/network/api/moebooru.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/helper/user.dart';
@@ -52,6 +53,8 @@ class PoolsPageState extends BaseState<PoolsPage> {
       pools = await DanApi.instance.getPools(_booru.scheme, _booru.host, params);
     } else if (_booru.type == BooruType.moebooru) {
       pools = await MoeApi.instance.getPools(_booru.scheme, _booru.host, params);
+    } else if (_booru.type == BooruType.danbooru_one) {
+      pools = await DanOneApi.instance.getPools(_booru.scheme, _booru.host, params);
     }
     if (pools == null) {
       setState(() {
@@ -67,9 +70,11 @@ class PoolsPageState extends BaseState<PoolsPage> {
       _loadingStatus = LoadingStatus.idle;
       _lastResponseSize = pools.length;
       if (_page != 1) {
-        setState(() {
-          _pools.addAll(pools);
-        });
+        if(pools.isNotEmpty) {
+          setState(() {
+            _pools.addAll(pools);
+          });
+        }
       } else {
         setState(() {
           _pools = pools;

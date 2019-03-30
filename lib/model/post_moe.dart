@@ -141,7 +141,46 @@ class PostMoe extends PostBase {
   @JsonKey(name: 'last_commented_at')
   int lastCommentedAt;
 
-  PostMoe(this.id,this.tags,this.createdAt,this.updatedAt,this.creatorId,this.author,this.change,this.source,this.score,this.md5,this.fileSize,this.fileExt,this.fileUrl,this.isShownInIndex,this.previewUrl,this.previewWidth,this.previewHeight,this.actualPreviewWidth,this.actualPreviewHeight,this.sampleUrl,this.sampleWidth,this.sampleHeight,this.sampleFileSize,this.jpegUrl,this.jpegWidth,this.jpegHeight,this.jpegFileSize,this.rating,this.isRatingLocked,this.hasChildren,this.status,this.isPending,this.width,this.height,this.isHeld,this.isNoteLocked,this.lastNotedAt,this.lastCommentedAt,);
+  PostMoe(
+    this.id,
+    this.tags,
+    this.createdAt,
+    this.updatedAt,
+    this.creatorId,
+    this.author,
+    this.change,
+    this.source,
+    this.score,
+    this.md5,
+    this.fileSize,
+    this.fileExt,
+    this.fileUrl,
+    this.isShownInIndex,
+    this.previewUrl,
+    this.previewWidth,
+    this.previewHeight,
+    this.actualPreviewWidth,
+    this.actualPreviewHeight,
+    this.sampleUrl,
+    this.sampleWidth,
+    this.sampleHeight,
+    this.sampleFileSize,
+    this.jpegUrl,
+    this.jpegWidth,
+    this.jpegHeight,
+    this.jpegFileSize,
+    this.rating,
+    this.isRatingLocked,
+    this.hasChildren,
+    this.status,
+    this.isPending,
+    this.width,
+    this.height,
+    this.isHeld,
+    this.isNoteLocked,
+    this.lastNotedAt,
+    this.lastCommentedAt,
+  );
 
   factory PostMoe.fromJson(Map<String, dynamic> srcJson) => _$PostMoeFromJson(srcJson);
 
