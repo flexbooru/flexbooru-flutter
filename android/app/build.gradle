@@ -61,6 +61,9 @@ android {
         release {
             signingConfig signingConfigs.release
         }
+        debug {
+            applicationIdSuffix ".debug"
+        }
     }
     compileOptions {
         sourceCompatibility = '1.8'

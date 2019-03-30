@@ -15,8 +15,8 @@ abstract class PostBase extends Object {
   String keyword = '';
 
   String checkUrl(String url) {
-    if (url.contains('\/')) {
-      url = url.replaceAll('\/', '/');
+    if (url.contains('\\/')) {
+      url = url.replaceAll('\\/', '/');
     }
     if (url.startsWith('http')) {
       return url;

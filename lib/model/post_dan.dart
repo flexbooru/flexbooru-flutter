@@ -15,12 +15,14 @@ List<PostDan> getPostDanList({
   List<PostDan> result = [];
   list?.forEach((item) {
     PostDan post = PostDan.fromJson(item);
-    post.type = BooruHelper.index(BooruType.danbooru);
-    post.postId = post.id;
-    post.scheme = scheme;
-    post.host = host;
-    post.keyword = keyword;
-    result.add(post);
+    if (post.previewFileUrl != null) {
+      post.type = BooruHelper.index(BooruType.danbooru);
+      post.postId = post.id;
+      post.scheme = scheme;
+      post.host = host;
+      post.keyword = keyword;
+      result.add(post);
+    }
   });
   return result;
 }
@@ -220,7 +222,8 @@ class PostDan extends PostBase {
     this.tagStringMeta,
     this.fileUrl,
     this.largeFileUrl,
-    this.previewFileUrl);
+    this.previewFileUrl,
+  );
 
   factory PostDan.fromJson(Map<String, dynamic> srcJson) => _$PostDanFromJson(srcJson);
 
@@ -266,9 +269,7 @@ class PostDan extends PostBase {
   }
 
   @override
-  String getPreviewUrl() {
-    return checkUrl(previewFileUrl);
-  }
+  String getPreviewUrl() => checkUrl(previewFileUrl);
 
   @override
   String getSampleUrl() {

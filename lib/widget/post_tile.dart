@@ -18,7 +18,7 @@ class PostTile extends StatelessWidget {
             children: <Widget>[
               Container(
                 child: AspectRatio(
-                  aspectRatio: post.getPostWidth()/post.getPostHeight(),
+                  aspectRatio: post.getPostWidth() / post.getPostHeight(),
                   child: Image(
                     fit: BoxFit.cover,
                     image: CachedNetworkImageProvider(
