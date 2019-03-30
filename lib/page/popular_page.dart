@@ -67,7 +67,7 @@ class PopularPageState extends State<PopularPage> with ActiveBooruListener {
       primary: false,
       crossAxisCount: _getCrossAxisCount(context),
       staggeredTileBuilder: (_) => StaggeredTile.fit(1),
-      itemBuilder: (context, index) => PostTile(_posts[index]),
+      itemBuilder: (context, index) => PostTile(_posts[index], index),
       itemCount: _getItemCount(),
     );
   }

@@ -2,16 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flexbooru/model/post_base.dart';
 import 'package:flexbooru/constants.dart' show webViewUserAgent;
+import 'package:flexbooru/page/browse_page.dart';
+import 'package:flexbooru/helper/booru.dart';
 
 class PostTile extends StatelessWidget {
 
-  const PostTile(this.post);
+  const PostTile(this.post, this.index);
 
   final PostBase post;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => BrowsePage(
+              BooruHelper.type(post.type), post.host, post.keyword, index)
+            )
+        );
+      },
+      child: Card(
       child: Column(
         children: <Widget>[
           Stack(
@@ -52,6 +64,7 @@ class PostTile extends StatelessWidget {
           )
         ],
       ),
+    ),
     );
   }
 }
