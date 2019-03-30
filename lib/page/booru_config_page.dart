@@ -215,21 +215,21 @@ class BooruConfigPageState extends State<BooruConfigPage> {
             ),
             itemBuilder: (context) => <PopupMenuItem<BooruType>> [
               PopupMenuItem<BooruType>(
-                value:BooruType.danbooru,
+                value: BooruType.danbooru,
                 child: Text(BooruHelper.name(BooruType.danbooru)),
               ),
               PopupMenuItem<BooruType>(
-                value:BooruType.moebooru,
+                value: BooruType.moebooru,
                 child: Text(BooruHelper.name(BooruType.moebooru)),
               ),
               PopupMenuItem<BooruType>(
-                value:BooruType.danbooru_one,
+                value: BooruType.danbooru_one,
                 child: Text(BooruHelper.name(BooruType.danbooru_one)),
               ),
-              PopupMenuItem<BooruType>(
-                value:BooruType.gelbooru,
-                child: Text(BooruHelper.name(BooruType.gelbooru)),
-              ),
+              // PopupMenuItem<BooruType>(
+              //   value:BooruType.gelbooru,
+              //   child: Text(BooruHelper.name(BooruType.gelbooru)),
+              // ),
             ],
           ),
           // Scheme
