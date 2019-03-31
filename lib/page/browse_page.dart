@@ -72,12 +72,17 @@ class _BrowerPageState extends State<BrowsePage> {
             }
           ),
           minScale: PhotoViewComputedScale.contained,
-          heroTag: post.getPostId().toString(),
+          heroTag: posts[_currentPageIndex].getPostId() == post.getPostId() ? post.getPostId().toString() : "",
         );
       }).toList(),
       loadingChild: Center(
         child: CircularProgressIndicator(),
       ),
+      onPageChanged: (int index) {
+        setState(() {
+          _currentPageIndex = index;
+        });
+      },
     );
   }
 }

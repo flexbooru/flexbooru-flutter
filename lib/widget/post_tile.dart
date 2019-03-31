@@ -14,61 +14,64 @@ class PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => BrowsePage(
-              BooruHelper.type(post.type), post.host, post.keyword, index)
-            )
-        );
-      },
-      child: Card(
-      child: Column(
+    return Card(
+      child: Stack(
         children: <Widget>[
-          Stack(
+          Column(
             children: <Widget>[
-              Container(
-                child: AspectRatio(
-                  aspectRatio: post.getPostWidth() / post.getPostHeight(),
-                  child: Hero(
-                    child: Image(
-                      fit: BoxFit.cover,
-                      image: CachedNetworkImageProvider(
-                        post.getPreviewUrl(),
-                        headers: {
-                          "User-Agent": webViewUserAgent
-                        }
+              AspectRatio(
+                aspectRatio: post.getPostWidth() / post.getPostHeight(),
+                child: Hero(
+                  child: Image(
+                    fit: BoxFit.cover,
+                    image: CachedNetworkImageProvider(
+                      post.getPreviewUrl(),
+                      headers: {
+                        "User-Agent": webViewUserAgent
+                      }
+                    ),
+                  ),
+                  tag: post.getPostId().toString(),
+                  placeholderBuilder: (context, widget) => Placeholder(color: Colors.grey[300]),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('#${post.getPostId()}'),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '${post.getPostWidth()} x ${post.getPostHeight()}',
+                        style: const TextStyle(color: Colors.grey),
                       ),
                     ),
-                    tag: post.getPostId().toString(),
-                    placeholderBuilder: (context, widget) => Placeholder(color: Colors.grey[300]),
-                  ),
+                  ],
                 ),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('#${post.getPostId()}'),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                            '${post.getPostWidth()} x ${post.getPostHeight()}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                  ),
-                ],
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BrowsePage(
+                        BooruHelper.type(post.type), post.host, post.keyword, index)
+                    )
+                  );
+                },
+              ),
             ),
           )
         ],
       ),
-    ),
     );
   }
 }
