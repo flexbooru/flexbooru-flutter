@@ -14,6 +14,8 @@ import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/constants.dart';
 import 'package:flexbooru/helper/settings.dart';
+import 'package:flexbooru/theme/theme_model.dart' show ThemeType;
+import 'package:flexbooru/theme/theme_bloc.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -35,6 +37,8 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
   List<Booru> _boorus;
   Future<List<Booru>> _boorusFuture;
   Booru _activeBooru;
+
+  ThemeType _currentThemeType = ThemeType.light;
 
   TabItem _currentTab = TabItem.posts;
 
@@ -128,7 +132,6 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(TabHelper.description(_currentTab)),
-          backgroundColor: Colors.grey[50],
           elevation: 1.0,
         ),
         body: FutureBuilder<List<Booru>>(
@@ -165,6 +168,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
   }
 
   void _loadBoorus() async {
+    _currentThemeType = await Settings.instance.getTheme();
     List<Booru> boorus = await DatabaseHelper.instance.getAllBoorus();
     if (boorus == null || boorus.isEmpty) {
       await DatabaseHelper.instance.insertBooru(
@@ -261,9 +265,6 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
   
   Widget _buildDrawerHeaderItems(List<Booru> boorus) {
     return BoorusDrawerHeader(
-        decoration: BoxDecoration(
-          color: Colors.grey[50],
-        ),
         booruName: Text(_activeBooru.name),
         booruUrl: Text("${_activeBooru.scheme}://${_activeBooru.host}"),
         currentBooruPicture: CircleAvatar(
@@ -286,9 +287,6 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
 
   Widget _buildEmptyDrawerHeaderItems() {
     return BoorusDrawerHeader(
-      decoration: BoxDecoration(
-          color: Colors.grey[50],
-        ),
       booruName: Text('none booru'),
       booruUrl: Text(''),
       margin: EdgeInsets.zero,
@@ -313,15 +311,7 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: _drawerItems.map<Widget>((DrawerItem item) {
-                      return ListTile(
-                        leading: Icon(item.icon),
-                        title: Text(item.name),
-                        onTap: () {
-                          Navigator.of(context).pushNamed(item.routeName);
-                        },
-                      );
-                    }).toList(),
+                    children: _buildDrawerItemsTile(),
                   ),
                 ),
                 SlideTransition(
@@ -375,6 +365,55 @@ class HomeState extends State<Home> with TickerProviderStateMixin, BooruListener
       )
     );
     return items;
+  }
+
+  List<Widget> _buildDrawerItemsTile() {
+    List<Widget> widgets = _drawerItems.map<Widget>((DrawerItem item) {
+      return ListTile(
+      leading: Icon(item.icon),
+      title: Text(item.name),
+      onTap: () {
+        Navigator.of(context).pushNamed(item.routeName);
+        },
+      );
+    }).toList();
+    widgets.add(
+      ListTile(
+        leading: Icon(OMIcons.style),
+        title: Text('Night Mode'),
+        trailing: Switch(
+          activeColor: Colors.grey[50],
+          value: _currentThemeType == ThemeType.dark,
+          onChanged: (bool value) {
+            if(value) {
+              setState(() {
+                _currentThemeType = ThemeType.dark;
+              });
+              themeBloc.onDarkTheme();
+            } else {
+              setState(() {
+                _currentThemeType = ThemeType.light;
+              });
+              themeBloc.onLightTheme();
+            }
+          },
+        ),
+        onTap: () {
+          if (_currentThemeType == ThemeType.dark) {
+            setState(() {
+                _currentThemeType = ThemeType.light;
+            });
+            themeBloc.onLightTheme();
+          } else {
+            setState(() {
+                _currentThemeType = ThemeType.dark;
+            });
+            themeBloc.onDarkTheme();
+          }
+        },
+      )
+    );
+    return widgets;
   }
 
   @override

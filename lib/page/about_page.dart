@@ -10,7 +10,6 @@ class AboutPageState extends State<AboutPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("About"),
-        backgroundColor: Colors.grey[50],
         elevation: 1.0,
         ),
       body: Center(child: Text('About')),

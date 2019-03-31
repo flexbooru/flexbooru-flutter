@@ -118,11 +118,11 @@ class BottomNavigation extends StatelessWidget {
       onTap: (index) => onSelectTab(
         TabHelper.item(index),
       ),
+      selectedItemColor: Colors.deepPurple,
     );
   }
 
   BottomNavigationBarItem _buildItem({TabItem tabItem}) {
-
     String _text = TabHelper.description(tabItem);
     IconData _icon = TabHelper.icon(tabItem);
     IconData _activeIcon = TabHelper.activeIcon(tabItem);

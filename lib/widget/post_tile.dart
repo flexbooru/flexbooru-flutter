@@ -31,14 +31,18 @@ class PostTile extends StatelessWidget {
               Container(
                 child: AspectRatio(
                   aspectRatio: post.getPostWidth() / post.getPostHeight(),
-                  child: Image(
-                    fit: BoxFit.cover,
-                    image: CachedNetworkImageProvider(
-                      post.getPreviewUrl(),
-                      headers: {
-                        "User-Agent": webViewUserAgent
-                      }
+                  child: Hero(
+                    child: Image(
+                      fit: BoxFit.cover,
+                      image: CachedNetworkImageProvider(
+                        post.getPreviewUrl(),
+                        headers: {
+                          "User-Agent": webViewUserAgent
+                        }
+                      ),
                     ),
+                    tag: post.getPostId().toString(),
+                    placeholderBuilder: (context, widget) => Placeholder(color: Colors.grey[300]),
                   ),
                 ),
               ),

@@ -10,7 +10,6 @@ class AccountConfigPageState extends State<AccountConfigPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Account config"),
-        backgroundColor: Colors.grey[50],
         elevation: 1.0,
         ),
       body: Center(child: Text('Account config')),

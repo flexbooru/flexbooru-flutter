@@ -10,37 +10,35 @@ import 'package:flexbooru/page/account_page.dart';
 import 'package:flexbooru/page/comments_page.dart';
 import 'package:flexbooru/page/settings_page.dart';
 import 'package:flutter_user_agent/flutter_user_agent.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flexbooru/theme/theme_bloc.dart';
+import 'package:flexbooru/theme/theme_state.dart';
 
 void main() => runApp(App());
 
 class App extends StatelessWidget {
-  final SystemUiOverlayStyle _currentStyle = SystemUiOverlayStyle.light.copyWith(
-    statusBarColor: Colors.grey[50],
-    statusBarBrightness: Brightness.light,
-    // systemNavigationBarColor: Colors.grey[50],
-    // systemNavigationBarIconBrightness: Brightness.light,
-  );
   @override
   Widget build(BuildContext context) {
+    
     initUserAgentState();
-    SystemChrome.setSystemUIOverlayStyle(_currentStyle);
-    return MaterialApp(
-      title: 'Flexbooru',
-      theme: ThemeData(
-        primaryColor: Colors.deepPurple,
-        primaryColorDark: Colors.grey[50],
-        primaryColorBrightness: Brightness.light,
-        accentColor: Colors.pinkAccent,
-      ),
-      home: Home(),
-      routes: <String, WidgetBuilder> {
-        ROUTE_ABOUT: (context) => AboutPage(),
-        ROUTE_ACCOUNT: (context) => AccountPage(),
-        ROUTE_ACCOUNT_CONFIG: (context) => AccountConfigPage(),
-        ROUTE_BOORUS: (context) => BoorusPage(),
-        ROUTE_BOORU_CONFIG: (context) => BooruConfigPage(),
-        ROUTE_COMMENTS: (context) => CommentsPage(),
-        ROUTE_SETTINGS: (context) => SettingsPage(),
+
+    return BlocBuilder(
+      bloc: themeBloc,
+      builder: (BuildContext context, ThemeState state) {
+        return MaterialApp(
+          title: 'Flexbooru',
+          theme: state.themeModel.themedata,
+          home: Home(),
+          routes: <String, WidgetBuilder> {
+            ROUTE_ABOUT: (context) => AboutPage(),
+            ROUTE_ACCOUNT: (context) => AccountPage(),
+            ROUTE_ACCOUNT_CONFIG: (context) => AccountConfigPage(),
+            ROUTE_BOORUS: (context) => BoorusPage(),
+            ROUTE_BOORU_CONFIG: (context) => BooruConfigPage(),
+            ROUTE_COMMENTS: (context) => CommentsPage(),
+            ROUTE_SETTINGS: (context) => SettingsPage(),
+          },
+        );
       },
     );
   }

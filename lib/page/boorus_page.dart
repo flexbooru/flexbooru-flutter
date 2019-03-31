@@ -44,7 +44,6 @@ class BoorusPageState extends State<BoorusPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Manage boorus"),
-        backgroundColor: Colors.grey[50],
         elevation: 1.0,
         actions: <Widget>[
           PopupMenuButton<int>(

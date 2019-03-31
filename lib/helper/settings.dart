@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flexbooru/theme/theme_model.dart';
 
 abstract class ActiveBooruListener {
   void onActiveBooruChanged(int uid);
@@ -16,8 +17,6 @@ class Settings {
   static const POST_SIZE_LARGER = 'larger';
   static const POST_SIZE_ORIGIN = 'origin';
   static const THEME_MODE_KEY = 'settings_theme_mode';
-  static const THEME_MODE_SYSTEM = 'system';
-  static const THEME_MODE_AUTO_BATTERY = 'battery';
   static const THEME_MODE_DAY = 'day';
   static const THEME_MODE_NIGHT = 'night';
   static const GRID_WIDTH = 'settings_grid_width';
@@ -63,5 +62,31 @@ class Settings {
     });
     var prefs = await sharedPreferences;
     return prefs.setInt(ACTIVE_BOORU_UID_KEY, uid);
+  }
+
+  void saveTheme(ThemeType type) async {
+    var prefs = await sharedPreferences;
+    prefs.setString(THEME_MODE_KEY, _getThemeName(type));
+  }
+
+  Future<ThemeType> getTheme() async {
+    var prefs = await sharedPreferences;
+    return _getThemeType(prefs.getString(THEME_MODE_KEY) ?? THEME_MODE_DAY);
+  }
+
+  String _getThemeName(ThemeType type) {
+    if (type == ThemeType.light) {
+      return THEME_MODE_DAY;
+    } else {
+      return THEME_MODE_NIGHT;
+    }
+  }
+
+  ThemeType _getThemeType(String name) {
+    if (name == THEME_MODE_DAY) {
+      return ThemeType.light;
+    } else {
+      return ThemeType.dark;
+    }
   }
 }

@@ -52,7 +52,6 @@ class BooruConfigPageState extends State<BooruConfigPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Booru config"),
-        backgroundColor: Colors.grey[50],
         elevation: 1.0,
         actions: <Widget>[
           IconButton(

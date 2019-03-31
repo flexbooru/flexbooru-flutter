@@ -4,6 +4,7 @@ import 'package:flexbooru/model/post_base.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flexbooru/constants.dart' show webViewUserAgent;
 
 class BrowsePage extends StatefulWidget {
@@ -37,9 +38,8 @@ class _BrowerPageState extends State<BrowsePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: FutureBuilder(
+    
+    return FutureBuilder(
         future: _postsFuture,
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
@@ -49,35 +49,35 @@ class _BrowerPageState extends State<BrowsePage> {
             default:
               var posts = snapshot.data;
               if (posts != null) {
-                return _buildPageView(context, posts);
+                return _buildPhotoGallery(context, posts);
               } else {
                 return Center(child: Text('none posts'),);
               }
           }
         },
-      ),
-    );
+      );
   }
 
-  Widget _buildPageView(BuildContext context, List<PostBase> posts) {
-    return PageView.builder(
-      controller: _pageController,
-      itemCount: posts.length,
-      itemBuilder: (context, index) {
-        return Container(
-          child: PhotoView(
-            loadingChild: Center(
-              child: CircularProgressIndicator(),
-            ),
-            imageProvider: CachedNetworkImageProvider(
-              posts[index].getLargerUrl(),
-              headers: {
-                "User-Agent": webViewUserAgent
-              }
-            ),
+  Widget _buildPhotoGallery(BuildContext context, List<PostBase> posts) {
+    return PhotoViewGallery(
+      backgroundDecoration: BoxDecoration(color: Colors.black),
+      pageController: _pageController,
+      scrollPhysics: const BouncingScrollPhysics(),
+      pageOptions: posts.map<PhotoViewGalleryPageOptions>((post) {
+        return PhotoViewGalleryPageOptions(
+          imageProvider: CachedNetworkImageProvider(
+            post.getLargerUrl(),
+            headers: {
+              "User-Agent": webViewUserAgent
+            }
           ),
+          minScale: PhotoViewComputedScale.contained,
+          heroTag: post.getPostId().toString(),
         );
-      },
+      }).toList(),
+      loadingChild: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }
