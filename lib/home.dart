@@ -14,8 +14,8 @@ import 'package:flexbooru/helper/booru.dart';
 import 'package:flexbooru/helper/database.dart';
 import 'package:flexbooru/constants.dart';
 import 'package:flexbooru/helper/settings.dart';
-import 'package:flexbooru/theme/theme_model.dart' show ThemeType;
-import 'package:flexbooru/theme/theme_bloc.dart';
+import 'package:flexbooru/bloc/theme/theme_model.dart' show ThemeType;
+import 'package:flexbooru/bloc/theme/theme_bloc.dart';
 
 class Home extends StatefulWidget {
   @override

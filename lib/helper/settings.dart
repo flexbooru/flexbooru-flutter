@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flexbooru/theme/theme_model.dart';
+import 'package:flexbooru/bloc/theme/theme_model.dart';
 
 abstract class ActiveBooruListener {
   void onActiveBooruChanged(int uid);

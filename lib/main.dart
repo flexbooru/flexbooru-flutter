@@ -11,8 +11,8 @@ import 'package:flexbooru/page/comments_page.dart';
 import 'package:flexbooru/page/settings_page.dart';
 import 'package:flutter_user_agent/flutter_user_agent.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flexbooru/theme/theme_bloc.dart';
-import 'package:flexbooru/theme/theme_state.dart';
+import 'package:flexbooru/bloc/theme/theme_bloc.dart';
+import 'package:flexbooru/bloc/theme/theme_state.dart';
 
 void main() => runApp(App());
 
